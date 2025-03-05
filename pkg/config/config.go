@@ -6,7 +6,6 @@ package config
 
 import (
 	"fmt"
-	"runtime"
 
 	coreconfig "github.com/gardener/inventory/pkg/core/config"
 )
@@ -55,11 +54,6 @@ func Parse(paths []string) (*Config, error) {
 			return nil, fmt.Errorf("%w: %s (%s)", coreconfig.ErrUnsupportedVersion, conf.Version, path)
 		}
 
-	}
-
-	// Worker defaults
-	if conf.Worker.Concurrency <= 0 {
-		conf.Worker.Concurrency = runtime.NumCPU()
 	}
 
 	return &conf, nil
