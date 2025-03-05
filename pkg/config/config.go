@@ -38,7 +38,7 @@ type Config struct {
 // Parse parses the configs from the given paths in-order. Configuration
 // settings provided later in the sequence of paths will override settings from
 // previous config paths.
-func Parse(paths []string) (*Config, error) {
+func Parse(paths ...string) (*Config, error) {
 	var conf Config
 
 	for _, path := range paths {
