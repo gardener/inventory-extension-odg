@@ -124,7 +124,7 @@ func execStartCommand(ctx *cli.Context) error {
 	// Create a worker, register handlers and start it up
 	worker := newWorker(conf)
 	worker.HandlersFromRegistry(registry.TaskRegistry)
-	registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
+	_ = registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
 		slog.Info("registered task", "name", name)
 		return nil
 	})
@@ -140,7 +140,7 @@ func execStartCommand(ctx *cli.Context) error {
 // execListTasksCommand lists the tasks from the default registry
 func execListTasksCommand(ctx *cli.Context) error {
 	tasks := make([]string, 0)
-	registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
+	_ = registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
 		tasks = append(tasks, name)
 		return nil
 	})
