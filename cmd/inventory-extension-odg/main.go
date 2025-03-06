@@ -22,8 +22,8 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/urfave/cli/v2"
 
-	"github.tools.sap/kubernetes/inventory/extensions/odg/pkg/config"
-	"github.tools.sap/kubernetes/inventory/extensions/odg/pkg/version"
+	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/config"
+	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/version"
 )
 
 func main() {

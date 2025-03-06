@@ -1,4 +1,4 @@
-module github.tools.sap/kubernetes/inventory/extensions/odg
+module github.tools.sap/kubernetes/inventory-extension-odg
 
 go 1.24.0
 
