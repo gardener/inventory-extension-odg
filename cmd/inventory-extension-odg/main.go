@@ -23,6 +23,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/config"
+	_ "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/tasks"
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/version"
 )
 
