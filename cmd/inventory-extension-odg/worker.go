@@ -45,6 +45,20 @@ func NewWorkerCommand() *cli.Command {
 				Aliases: []string{"s"},
 				Action:  execWorkerStartCommand,
 			},
+			{
+				Name:    "ping",
+				Usage:   "ping a worker",
+				Aliases: []string{"p"},
+				Action:  execWorkerPingCommand,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "worker",
+						Usage:    "worker name to ping",
+						Required: true,
+						Aliases:  []string{"name"},
+					},
+				},
+			},
 		},
 	}
 
@@ -86,13 +100,13 @@ func newWorker(conf *config.Config) *workerutils.Worker {
 	return worker
 }
 
-// execStartCommand starts the worker
+// execWorkerStartCommand starts the worker
 func execWorkerStartCommand(ctx *cli.Context) error {
 	// Parse config files for the extension
 	configPaths := ctx.StringSlice("config")
 	conf, err := config.Parse(configPaths...)
 	if err != nil {
-		return fmt.Errorf("Cannot parse config: %w", err)
+		return err
 	}
 
 	// Configure the default [slog.Logger]
@@ -124,4 +138,38 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	}
 
 	return worker.Run()
+}
+
+// execWorkerPingCommand pings a worker
+func execWorkerPingCommand(ctx *cli.Context) error {
+	// Parse config files for the extension
+	configPaths := ctx.StringSlice("config")
+	conf, err := config.Parse(configPaths...)
+	if err != nil {
+		return err
+	}
+
+	workerName := ctx.String("worker")
+	redisClientOpt := asynqutils.NewRedisClientOptFromConfig(conf.Redis)
+	inspector := asynq.NewInspector(redisClientOpt)
+	defer inspector.Close()
+
+	servers, err := inspector.Servers()
+	if err != nil {
+		return err
+	}
+
+	ok := false
+	for _, server := range servers {
+		if server.Host == workerName {
+			ok = true
+			fmt.Printf("%s/%d: OK\n", server.Host, server.PID)
+		}
+	}
+
+	if !ok {
+		return cli.Exit("", 1)
+	}
+
+	return nil
 }
