@@ -14,22 +14,27 @@ import (
 )
 
 const (
-	// TaskSubmitAllFindings is the name of the meta task, which enqueues
-	// tasks for submitting all supported findings to the Open Delivery Gear
+	// TaskReportAllFindings is the name of the meta task, which enqueues
+	// tasks for reporting all supported findings to the Open Delivery Gear
 	// API service.
-	TaskSubmitAllFindings = "odg:task:submit-all-findings"
+	TaskReportAllFindings = "odg:task:report-all-findings"
 )
 
-// HandleSubmitAllFindings is a handler, which enqueues tasks for submitting all
+// HandleReportAllFindings is a handler, which enqueues tasks for reporting all
 // supported findings to the Open Delivery Gear API service.
-func HandleSubmitAllFindings(ctx context.Context, t *asynq.Task) error {
+func HandleReportAllFindings(ctx context.Context, t *asynq.Task) error {
 	queue := asynqutils.GetQueueName(ctx)
-	taskFuncs := []utils.TaskConstructor{}
+	taskFuncs := []utils.TaskConstructor{
+		NewTaskReportOrphanVirtualMachinesGCP,
+	}
 
 	return utils.Enqueue(ctx, taskFuncs, asynq.Queue(queue))
 }
 
 // init registers the task handlers with the default Inventory registry
 func init() {
-	registry.TaskRegistry.MustRegister(TaskSubmitAllFindings, asynq.HandlerFunc(HandleSubmitAllFindings))
+	registry.TaskRegistry.MustRegister(
+		TaskReportAllFindings,
+		asynq.HandlerFunc(HandleReportAllFindings),
+	)
 }
