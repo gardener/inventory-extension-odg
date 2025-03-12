@@ -1,4 +1,4 @@
-FROM golang:1.24.0 AS builder
+FROM golang:1.24.1 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -16,6 +16,7 @@ COPY cmd/ ./cmd
 COPY pkg/ ./pkg
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o inventory-extension-odg ./cmd/inventory-extension-odg
 
+# TODO: switch to distroless
 #FROM gcr.io/distroless/static:nonroot
 FROM alpine:3.21
 
