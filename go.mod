@@ -3,11 +3,11 @@ module github.tools.sap/kubernetes/inventory-extension-odg
 go 1.24.0
 
 require (
-	github.com/gardener/inventory v0.1.8
+	github.com/gardener/inventory v0.1.9-0.20250312111956-0ff92793c36f
 	github.com/hibiken/asynq v0.25.1
 	github.com/uptrace/bun v1.2.9
 	github.com/uptrace/bun/extra/bundebug v1.2.9
-	github.com/urfave/cli/v2 v2.27.5
+	github.com/urfave/cli/v2 v2.27.6
 )
 
 require (
@@ -206,9 +206,9 @@ require (
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	golang.org/x/time v0.9.0 // indirect
+	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
