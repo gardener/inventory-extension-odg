@@ -27,6 +27,7 @@ func HandleReportAllFindings(ctx context.Context, t *asynq.Task) error {
 	taskFuncs := []utils.TaskConstructor{
 		NewTaskReportOrphanVirtualMachinesGCP,
 		NewTaskReportOrphanVirtualMachinesAzure,
+		NewTaskReportOrphanVirtualMachinesAWS,
 	}
 
 	return utils.Enqueue(ctx, taskFuncs, asynq.Queue(queue))
