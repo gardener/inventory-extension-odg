@@ -4,39 +4,9 @@
 
 package tasks
 
-import (
-	"context"
-
-	"github.com/gardener/inventory/pkg/common/utils"
-	"github.com/gardener/inventory/pkg/core/registry"
-	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
-	"github.com/hibiken/asynq"
-)
-
-const (
-	// TaskReportAllFindings is the name of the meta task, which enqueues
-	// tasks for reporting all supported findings to the Open Delivery Gear
-	// API service.
-	TaskReportAllFindings = "odg:task:report-all-findings"
-)
-
-// HandleReportAllFindings is a handler, which enqueues tasks for reporting all
-// supported findings to the Open Delivery Gear API service.
-func HandleReportAllFindings(ctx context.Context, t *asynq.Task) error {
-	queue := asynqutils.GetQueueName(ctx)
-	taskFuncs := []utils.TaskConstructor{
-		NewTaskReportOrphanVirtualMachinesGCP,
-		NewTaskReportOrphanVirtualMachinesAzure,
-		NewTaskReportOrphanVirtualMachinesAWS,
-	}
-
-	return utils.Enqueue(ctx, taskFuncs, asynq.Queue(queue))
-}
-
-// init registers the task handlers with the default Inventory registry
-func init() {
-	registry.TaskRegistry.MustRegister(
-		TaskReportAllFindings,
-		asynq.HandlerFunc(HandleReportAllFindings),
-	)
+// Payload represents the payload expected by tasks which report orphan
+// resources to the Open Delivery Gear API.
+type Payload struct {
+	// Query represents the SQL query to use when fetching orphan resources.
+	Query string `yaml:"query" json:"query"`
 }
