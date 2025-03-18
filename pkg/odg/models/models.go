@@ -23,3 +23,25 @@ type OrphanVirtualMachineAWS struct {
 	ImageID      string    `bun:"image_id" json:"image_id"`
 	LaunchTime   time.Time `bun:"launch_time" json:"launch_time"`
 }
+
+// OrphanVirtualMachineGCP represents a GCP instance, which has been identified
+// as being orphan.
+type OrphanVirtualMachineGCP struct {
+	Name                 string `bun:"name" json:"name"`
+	Hostname             string `bun:"hostname" json:"hostname"`
+	InstanceID           uint64 `bun:"instance_id" json:"instance_id"`
+	ProjectID            string `bun:"project_id" json:"project_id"`
+	Region               string `bun:"region" json:"region"`
+	Zone                 string `bun:"zone" json:"zone"`
+	CPUPlatform          string `bun:"cpu_platform" json:"cpu_platform"`
+	Status               string `bun:"status" json:"status"`
+	StatusMessage        string `bun:"status_message" json:"status_message"`
+	CreationTimestamp    string `bun:"creation_timestamp" json:"creation_timestamp"`
+	Description          string `bun:"description" json:"description"`
+	LastStartTimestamp   string `bun:"last_start_timestamp" json:"last_start_timestamp"`
+	LastStopTimestamp    string `bun:"last_stop_timestamp" json:"last_stop_timestamp"`
+	LastSuspendTimestamp string `bun:"last_suspend_timestamp" json:"last_suspend_timestamp"`
+	MachineType          string `bun:"machine_type" json:"machine_type"`
+	GKEClusterName       string `bun:"gke_cluster_name" json:"gke_cluster_name"`
+	GKEPoolName          string `bun:"gke_pool_name" json:"gke_pool_name"`
+}
