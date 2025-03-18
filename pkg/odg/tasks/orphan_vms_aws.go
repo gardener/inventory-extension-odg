@@ -7,8 +7,12 @@ package tasks
 import (
 	"context"
 
+	dbclient "github.com/gardener/inventory/pkg/clients/db"
 	"github.com/gardener/inventory/pkg/core/registry"
+	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
+
+	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
 const (
@@ -17,16 +21,21 @@ const (
 	TaskReportOrphanVirtualMachinesAWS = "odg:task:report-orphan-vms-aws"
 )
 
-// NewTaskReportOrphanVirtualMachinesAWS creates a new [asynq.Task] for
-// reporting orphan AWS EC2 Virtual Machines as findings.
-func NewTaskReportOrphanVirtualMachinesAWS() *asynq.Task {
-	return asynq.NewTask(TaskReportOrphanVirtualMachinesAWS, nil)
-}
-
 // HandleReportOrphanVirtualMachinesAWS is a handler, which reports orphan AWS
 // virtual machines as findings.
 func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) error {
-	// TODO: implement me
+	payload, err := DecodePayload(t)
+	if err != nil {
+		return asynqutils.SkipRetry(err)
+	}
+
+	var items models.OrphanVirtualMachineAWS
+	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
+		return err
+	}
+
+	// TODO: Submit the findings
+
 	return nil
 }
 
