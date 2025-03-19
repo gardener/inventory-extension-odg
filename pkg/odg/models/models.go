@@ -45,3 +45,18 @@ type OrphanVirtualMachineGCP struct {
 	GKEClusterName       string `bun:"gke_cluster_name" json:"gke_cluster_name"`
 	GKEPoolName          string `bun:"gke_pool_name" json:"gke_pool_name"`
 }
+
+// OrphanVirtualMachineAzure represents an Azure virtual machine, which has been
+// identified as being orphan.
+type OrphanVirtualMachineAzure struct {
+	Name                       string    `bun:"name" json:"name"`
+	SubscriptionID             string    `bun:"subscription_id" json:"subscription_id"`
+	ResourceGroup              string    `bun:"resource_group" json:"resource_group"`
+	Location                   string    `bun:"location" json:"location"`
+	ProvisioningState          string    `bun:"provisioning_state" json:"provisioning_state"`
+	VirtualMachineCreatedAt    time.Time `bun:"vm_created_at" json:"vm_created_at"`
+	VirtualMachineSize         string    `bun:"vm_size" json:"vm_size"`
+	VirtualMachineAgentVersion string    `bun:"vm_agent_version" json:"vm_agent_version"`
+	PowerState                 string    `bun:"power_state" json:"power_state"`
+	HyperVGeneration           string    `bun:"hyper_v_gen" json:"hyper_v_gen"`
+}
