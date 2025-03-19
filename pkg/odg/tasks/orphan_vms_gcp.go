@@ -11,6 +11,7 @@ import (
 	"github.com/gardener/inventory/pkg/core/registry"
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
+
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
