@@ -4,7 +4,10 @@
 
 package models
 
-import "time"
+import (
+	"net"
+	"time"
+)
 
 // OrphanVirtualMachineAWS represents an AWS EC2 instance, which has been
 // identified as being orphan.
@@ -59,4 +62,29 @@ type OrphanVirtualMachineAzure struct {
 	VirtualMachineAgentVersion string    `bun:"vm_agent_version" json:"vm_agent_version"`
 	PowerState                 string    `bun:"power_state" json:"power_state"`
 	HyperVGeneration           string    `bun:"hyper_v_gen" json:"hyper_v_gen"`
+}
+
+// OrphanPublicAddressGCP represents a GCP public IP address, which has been
+// identified as being orphan.
+type OrphanPublicAddressGCP struct {
+	RuleID              uint64 `bun:"rule_id" json:"rule_id"`
+	ProjectID           string `bun:"project_id" json:"project_id"`
+	Name                string `bun:"name" json:"name"`
+	IPAddress           net.IP `bun:"ip_address" json:"ip_address"`
+	IPProtocol          string `bun:"ip_protocol" json:"ip_protocol"`
+	IPVersion           string `bun:"ip_version" json:"ip_version"`
+	AllPorts            bool   `bun:"all_ports" json:"all_ports"`
+	AllowGlobalAccess   bool   `bun:"allow_global_access" json:"allow_global_access"`
+	BackendService      string `bun:"backend_service" json:"backend_service"`
+	CreationTimestamp   string `bun:"creation_timestamp" json:"creation_timestamp"`
+	Description         string `bun:"description" json:"description"`
+	LoadBalancingScheme string `bun:"load_balancing_scheme" json:"load_balancing_scheme"`
+	Network             string `bun:"network" json:"network"`
+	NetworkTier         string `bun:"network_tier" json:"network_tier"`
+	PortRange           string `bun:"port_range" json:"port_range"`
+	Region              string `bun:"region" json:"region"`
+	ServiceLabel        string `bun:"service_label" json:"service_label"`
+	ServiceName         string `bun:"service_name" json:"service_name"`
+	Subnetwork          string `bun:"subnetwork" json:"subnetwork"`
+	Target              string `bun:"target" json:"target"`
 }
