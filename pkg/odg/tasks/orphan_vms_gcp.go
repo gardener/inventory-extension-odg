@@ -29,10 +29,13 @@ func HandleReportOrphanVirtualMachinesGCP(ctx context.Context, t *asynq.Task) er
 		return asynqutils.SkipRetry(err)
 	}
 
-	var items models.OrphanVirtualMachineGCP
+	var items []models.OrphanVirtualMachineGCP
 	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
 		return err
 	}
+
+	logger := asynqutils.GetLogger(ctx)
+	logger.Info("reporting orphan gcp instances", "count", len(items))
 
 	// TODO: Submit the findings
 

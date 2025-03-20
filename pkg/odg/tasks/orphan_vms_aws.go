@@ -29,10 +29,13 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		return asynqutils.SkipRetry(err)
 	}
 
-	var items models.OrphanVirtualMachineAWS
+	var items []models.OrphanVirtualMachineAWS
 	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
 		return err
 	}
+
+	logger := asynqutils.GetLogger(ctx)
+	logger.Info("reporting orphan aws instances", "count", len(items))
 
 	// TODO: Submit the findings
 

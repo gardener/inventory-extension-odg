@@ -29,10 +29,13 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 		return asynqutils.SkipRetry(err)
 	}
 
-	var items models.OrphanPublicAddressGCP
+	var items []models.OrphanPublicAddressGCP
 	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
 		return err
 	}
+
+	logger := asynqutils.GetLogger(ctx)
+	logger.Info("reporting orphan gcp public addresses", "count", len(items))
 
 	// TODO: Submit the findings
 

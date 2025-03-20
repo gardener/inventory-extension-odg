@@ -29,10 +29,13 @@ func HandleReportOrphanVirtualMachinesAzure(ctx context.Context, t *asynq.Task) 
 		return asynqutils.SkipRetry(err)
 	}
 
-	var items models.OrphanVirtualMachineAzure
+	var items []models.OrphanVirtualMachineAzure
 	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
 		return err
 	}
+
+	logger := asynqutils.GetLogger(ctx)
+	logger.Info("reporting orphan azure instances", "count", len(items))
 
 	// TODO: Submit the findings
 
