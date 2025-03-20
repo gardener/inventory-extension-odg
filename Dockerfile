@@ -16,11 +16,8 @@ COPY cmd/ ./cmd
 COPY pkg/ ./pkg
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o inventory-extension-odg ./cmd/inventory-extension-odg
 
-# TODO: switch to distroless
-#FROM gcr.io/distroless/static:nonroot
-FROM alpine:3.21
+FROM gcr.io/distroless/static:nonroot
 
-RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
 WORKDIR /app
 COPY --from=builder /workspace/inventory-extension-odg .
 USER nonroot:nonroot
