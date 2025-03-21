@@ -1,0 +1,50 @@
+---
+services:
+  postgres:
+    ports:
+      - 5432:5432
+    image: postgres:17.4-bookworm
+    environment:
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: p4ssw0rd
+      POSTGRES_DB: inventory
+    volumes:
+      - ./dev/local/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username", "inventory"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    ports:
+      - 6379:6379
+    image: redis:7.4-bookworm
+    volumes:
+      - ./dev/local/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ["/app/inventory-extension-odg", "worker", "start"]
+    hostname: inventory-extension-odg-1
+    healthcheck:
+      test: ["CMD", "/app/inventory-extension-odg", "worker", "ping", "--name", "inventory-extension-odg-1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      INVENTORY_EXTENSION_CONFIG: /home/nonroot/config.yaml
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./examples/config.yaml:/home/nonroot/config.yaml
