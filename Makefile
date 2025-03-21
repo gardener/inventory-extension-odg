@@ -33,6 +33,10 @@ $(BINARY): $(SRC_DIRS) | $(LOCAL_BIN)
 .PHONY: build
 build: $(BINARY)
 
+.PHONY: run
+run: $(BINARY)
+	$(BINARY) worker start
+
 .PHONY: get
 get:
 	go mod download
