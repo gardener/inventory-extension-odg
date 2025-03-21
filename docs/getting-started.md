@@ -302,6 +302,7 @@ scheduler:
     - name: "odg:task:report-orphan-vms-aws"
       spec: "@every 7d"
       desc: "Report orphan AWS EC2 Instances"
+      queue: odg
       payload: |
         SELECT
           i.name,
@@ -328,6 +329,7 @@ scheduler:
     - name: "odg:task:report-orphan-vms-gcp"
       spec: "@every 7d"
       desc: "Report orphan GCP Virtual Machines"
+      queue: odg
       payload: |
         SELECT
           i.name,
@@ -359,6 +361,7 @@ scheduler:
     - name: "odg:task:report-orphan-vms-az"
       spec: "@every 7d"
       desc: "Report orphan Azure Virtual Machines"
+      queue: odg
       payload: |
         SELECT
           vm.name,
@@ -382,6 +385,7 @@ scheduler:
     - name: "odg:task:report-orphan-ip-address-gcp"
       spec: "@every 7d"
       desc: "Report orphan GCP Public Addresses"
+      queue: odg
       payload: |
         SELECT
           a.rule_id,
