@@ -2,7 +2,7 @@
 
 `inventory-extension-odg` is an extension for
 [gardener/inventory](https://github.com/gardener/inventory), which provides
-integration with Open Delivery Gear.
+integration with [Open Delivery Gear](https://github.com/open-component-model/ocm-gear).
 
 Orphan resources discovered by Inventory will be submitted by the
 `inventory-extension-odg` extension to the Delivery Service API as findings.
@@ -13,15 +13,11 @@ architecture.
 
 ![Open Delivery Gear Extension](./images/inventory-extension-odg.png)
 
-TODO: Fill me in
-
-# Requirements
-
-TODO: Fill me in
-
 # Documentation
 
-TODO: Fill me in
+Check the [Getting Started](./docs/getting-started.md) documentation for details
+on how to get started with `inventory-extension-odg`, how to configure the
+extension, setup a local development environment, etc.
 
 # License
 
