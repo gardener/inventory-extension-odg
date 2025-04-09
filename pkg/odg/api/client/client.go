@@ -131,6 +131,18 @@ func WithGithubAuthentication(apiURL, accessToken string) Option {
 	return opt
 }
 
+// WithHTTPClient configures the [Client] to use the specified [http.Client] for
+// making calls to the Delivery Service API.
+func WithHTTPClient(httpClient *http.Client) Option {
+	opt := func(c *Client) error {
+		c.httpClient = httpClient
+
+		return nil
+	}
+
+	return opt
+}
+
 // Authenticate authenticates the API client against the remote Delivery Service
 // API.
 //
