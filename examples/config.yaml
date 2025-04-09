@@ -43,3 +43,27 @@ worker:
   # first, and tasks from queues with lower priority are processed only after
   # higher priority queues are empty.
   strict_priority: false
+
+# Open Delivery Gear settings
+odg:
+  # Specifies the base API endpoint of the ODG API
+  endpoint: http://localhost:8080/
+
+  # Specifies the User-Agent header to configure on the API client
+  user_agent: gardener-inventory-extension-odg/0.1.0
+
+  # Specifies the settings to use when authenticating against the ODG API.
+  auth:
+    # The authentication method to use.
+    # The currently supported authentication method is `github'.
+    method: github
+
+    # Settings specific to `github' authentication method
+    github:
+      # The base Github API URL, which the Delivery Service will use to query
+      # user's information with the provided access token.
+      url: https://my-github-enterprise.com/api/v3
+
+      # Specifies the Github access token which will be used to query the
+      # information about the user associated with the token.
+      token: my-personal-access-token
