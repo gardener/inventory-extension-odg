@@ -4,8 +4,14 @@
 
 package client
 
-// Client is a an API client for the Open Delivery Gear service.
-//
-// TODO: implement me
-type Client struct {
+import (
+	odgapi "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
+)
+
+// Client is the Open Delivery Gear API client used by the various tasks.
+var Client *odgapi.Client
+
+// SetClient sets the default API client to the given [odgapi.Client]
+func SetClient(c *odgapi.Client) {
+	Client = c
 }
