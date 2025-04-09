@@ -10,6 +10,16 @@ import (
 	coreconfig "github.com/gardener/inventory/pkg/core/config"
 )
 
+// ODGAuthMethod represents an authentication method to use when authenticating
+// against the remote Delivery Service API.
+type ODGAuthMethod string
+
+const (
+	// ODGAuthMethodGithub represents authentication method, which uses
+	// Github for querying users' information.
+	ODGAuthMethodGithub = "github"
+)
+
 // ConfigFormatVersion represents the supported config format version for the
 // extension.
 const ConfigFormatVersion = "v1alpha1"
@@ -33,6 +43,44 @@ type Config struct {
 
 	// Worker provides the worker configuration.
 	Worker coreconfig.WorkerConfig `yaml:"worker"`
+
+	// ODG provides the Open Delivery Gear configuration
+	ODG ODGConfig `yaml:"odg"`
+}
+
+// ODGConfig represents the Open Delivery Gear configuration
+type ODGConfig struct {
+	// Endpoint specifies the base API endpoint of the remote API
+	Endpoint string `yaml:"endpoint"`
+
+	// UserAgent specifies the User-Agent header to configure for the API
+	// client.
+	UserAgent string `yaml:"user_agent"`
+
+	Auth ODGAuthConfig `yaml:"auth"`
+}
+
+// ODGAuthConfig represents the Open Delivery Gear authentication configuration.
+type ODGAuthConfig struct {
+	// Method specifies the authentication method to use when authenticating
+	// against the remote Open Delivery Gear API.
+	Method ODGAuthMethod `yaml:"method"`
+
+	// Github specifies the settings for `github' authentication method when
+	// authenticating against the remote API.
+	Github ODGAuthGithubConfig `yaml:"github"`
+}
+
+// ODGAuthGithubConfig provides the configuration for `github' authentication
+// method.
+type ODGAuthGithubConfig struct {
+	// URL specifies the base Github API URL which the Delivery Service will
+	// use to query user's information with the provided access token.
+	URL string `yaml:"url"`
+
+	// Token specifies the Github access token which will be used to query
+	// the information about the user associated with the token.
+	Token string `yaml:"token"`
 }
 
 // Parse parses the configs from the given paths in-order. Configuration
