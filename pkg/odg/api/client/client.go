@@ -6,11 +6,57 @@
 package client
 
 import (
+	"bytes"
 	"context"
-	"errors"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
+
+// APIError represents an error returned by the remote Delivery Delivery Service
+// API.
+type APIError struct {
+	// Method specifies the HTTP method that was used as part of the request
+	Method string
+
+	// URL specifies the URL that was used as part of the request
+	URL string
+
+	// StatusCode is the HTTP status code returned by the API.
+	StatusCode int
+
+	// Body is the body returned as part of the response by the API.
+	Body []byte
+}
+
+// APIErrorFromResponse creates a new [APIError] from the given [http.Response].
+func APIErrorFromResponse(resp *http.Response) error {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("cannot ready response body: %w", err)
+	}
+
+	apiErr := &APIError{
+		Method:     resp.Request.Method,
+		URL:        resp.Request.URL.String(),
+		StatusCode: resp.StatusCode,
+		Body:       body,
+	}
+
+	// Add body back to response for future reading
+	resp.Body = io.NopCloser(bytes.NewReader(body))
+
+	return apiErr
+
+}
+
+// Error implements the error interface
+func (ae *APIError) Error() string {
+	s := fmt.Sprintf("method=%s url=%s code=%d body=%s", ae.Method, ae.URL, ae.StatusCode, string(ae.Body))
+
+	return s
+}
 
 // Option is a function which configures the [Client].
 type Option func(c *Client) error
@@ -110,10 +156,10 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
-	// TODO: Better errors
 	if resp.StatusCode != http.StatusOK {
-		return errors.New(resp.Status)
+		return APIErrorFromResponse(resp)
 	}
 
 	return nil
