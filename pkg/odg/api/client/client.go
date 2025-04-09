@@ -83,6 +83,10 @@ type Client struct {
 	// httpClient is the [http.Client], which will be used for API calls
 	httpClient *http.Client
 
+	// userAgent specifies the User-Agent header to set when making API
+	// calls.
+	userAgent string
+
 	// authGithubURL specifies a Github API URL, which the Delivery Service
 	// will query for user's information, before signing a JWT token for us.
 	authGithubURL *url.URL
@@ -130,6 +134,62 @@ func New(endpoint string, opts ...Option) (*Client, error) {
 	return c, nil
 }
 
+// setReqHeaders configures HTTP headers for the given [http.Request]
+func (c *Client) setReqHeaders(req *http.Request) {
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
+	}
+}
+
+// Authenticate authenticates the API client against the remote Delivery Service
+// API.
+//
+// Upon successful authentication the Delivery Service returns a cookie with a
+// JWT bearer token, which will be used in subsequent API calls to the service.
+func (c *Client) Authenticate(ctx context.Context) error {
+	u, err := url.JoinPath(c.endpoint.String(), "auth")
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	if err != nil {
+		return err
+	}
+
+	c.setReqHeaders(req)
+
+	query := req.URL.Query()
+	query.Add("api_url", c.authGithubURL.String())
+	query.Add("access_token", c.authGithubToken)
+	req.URL.RawQuery = query.Encode()
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return APIErrorFromResponse(resp)
+	}
+
+	// Make sure that the API returned our authentication cookie
+	gotAuthCookie := false
+	for _, cookie := range resp.Cookies() {
+		if cookie.Name == AuthCookie {
+			gotAuthCookie = true
+			break
+		}
+	}
+
+	if !gotAuthCookie {
+		return ErrNoAuthCookie
+	}
+
+	return nil
+}
+
 // WithGithubAuthentication configures the [Client] to authenticate against the
 // remote Delivery Service using a Github access token.
 //
@@ -167,49 +227,14 @@ func WithHTTPClient(httpClient *http.Client) Option {
 	return opt
 }
 
-// Authenticate authenticates the API client against the remote Delivery Service
-// API.
-//
-// Upon successful authentication the Delivery Service returns a cookie with a
-// JWT bearer token, which will be used in subsequent API calls to the service.
-func (c *Client) Authenticate(ctx context.Context) error {
-	u, err := url.JoinPath(c.endpoint.String(), "auth")
-	if err != nil {
-		return err
+// WithUserAgent configures the [Client] to use the specified User-Agent when
+// making API calls.
+func WithUserAgent(userAgent string) Option {
+	opt := func(c *Client) error {
+		c.userAgent = userAgent
+
+		return nil
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
-	if err != nil {
-		return err
-	}
-
-	query := req.URL.Query()
-	query.Add("api_url", c.authGithubURL.String())
-	query.Add("access_token", c.authGithubToken)
-	req.URL.RawQuery = query.Encode()
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return APIErrorFromResponse(resp)
-	}
-
-	// Make sure that the API returned our authentication cookie
-	gotAuthCookie := false
-	for _, cookie := range resp.Cookies() {
-		if cookie.Name == AuthCookie {
-			gotAuthCookie = true
-			break
-		}
-	}
-
-	if !gotAuthCookie {
-		return ErrNoAuthCookie
-	}
-
-	return nil
+	return opt
 }
