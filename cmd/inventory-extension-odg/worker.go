@@ -5,6 +5,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -21,6 +22,8 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/config"
+	odgapi "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
+	odgclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/client"
 )
 
 // NewWorkerCommand returns a new [cli.Command] for worker-related operations.
@@ -100,6 +103,40 @@ func newWorker(conf *config.Config) *workerutils.Worker {
 	return worker
 }
 
+// newOdgClient creates a new [odgapiclient.Client] instance based on the
+// provided [config.Config] settings.
+func newOdgClient(conf *config.Config) (*odgapi.Client, error) {
+	opts := []odgapi.Option{
+		odgapi.WithUserAgent(conf.ODG.UserAgent),
+	}
+
+	if conf.ODG.Endpoint == "" {
+		return nil, errors.New("odg: no api endpoint specified")
+	}
+
+	if conf.ODG.Auth.Method == "" {
+		return nil, errors.New("odg: no auth method specified")
+	}
+
+	switch conf.ODG.Auth.Method {
+	case config.ODGAuthMethodGithub:
+		if conf.ODG.Auth.Github.URL == "" {
+			return nil, errors.New("odg: no github api url specified")
+		}
+		if conf.ODG.Auth.Github.Token == "" {
+			return nil, errors.New("odg: no github access token specified")
+		}
+		opts = append(
+			opts,
+			odgapi.WithGithubAuthentication(conf.ODG.Auth.Github.URL, conf.ODG.Auth.Github.Token),
+		)
+	default:
+		return nil, fmt.Errorf("odg: unknown auth method %s", conf.ODG.Auth.Method)
+	}
+
+	return odgapi.New(conf.ODG.Endpoint, opts...)
+}
+
 // execWorkerStartCommand starts the worker
 func execWorkerStartCommand(ctx *cli.Context) error {
 	// Parse config files for the extension
@@ -115,14 +152,27 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 		return err
 	}
 	slog.SetDefault(logger)
+	slog.Info("configured default logger")
 
 	// Configure database client and set it up for task handlers
+	slog.Info("configuring database client")
 	db, err := newDB(conf)
 	if err != nil {
 		return err
 	}
 	dbclient.SetDB(db)
 	defer db.Close()
+
+	// Configure the Open Delivery Gear API client
+	slog.Info("configuring open delivery gear api client")
+	odgClient, err := newOdgClient(conf)
+	if err != nil {
+		return err
+	}
+	if err := odgClient.Authenticate(ctx.Context); err != nil {
+		return err
+	}
+	odgclient.SetClient(odgClient)
 
 	// Create a worker, register handlers and start it up
 	worker := newWorker(conf)
