@@ -8,11 +8,24 @@ package client
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 )
+
+// AuthCookie is the name of the cookie returned by the Delivery
+// Service API upon successful authentication.
+//
+// The cookie must be set on each subsequent request to the API, in order for
+// the API calls to be authenticated.
+const AuthCookie = "bearer_token"
+
+// ErrNoAuthCookie is an error, which is returned when the remote API server did
+// not return an authentication cookie upon successful authentication.
+var ErrNoAuthCookie = errors.New("no authentication cookie returned")
 
 // APIError represents an error returned by the remote Delivery Delivery Service
 // API.
@@ -99,8 +112,19 @@ func New(endpoint string, opts ...Option) (*Client, error) {
 		}
 	}
 
+	// Configure default HTTP client, unless already set
 	if c.httpClient == nil {
 		c.httpClient = http.DefaultClient
+	}
+
+	// Make sure that we've got a cookie jar, so that we can store and
+	// re-use the authentication cookie.
+	if c.httpClient.Jar == nil {
+		jar, err := cookiejar.New(nil)
+		if err != nil {
+			return nil, err
+		}
+		c.httpClient.Jar = jar
 	}
 
 	return c, nil
@@ -172,6 +196,19 @@ func (c *Client) Authenticate(ctx context.Context) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return APIErrorFromResponse(resp)
+	}
+
+	// Make sure that the API returned our authentication cookie
+	gotAuthCookie := false
+	for _, cookie := range resp.Cookies() {
+		if cookie.Name == AuthCookie {
+			gotAuthCookie = true
+			break
+		}
+	}
+
+	if !gotAuthCookie {
+		return ErrNoAuthCookie
 	}
 
 	return nil
