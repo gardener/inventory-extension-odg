@@ -59,6 +59,27 @@ const (
 	DatatypeInventory Datatype = "finding/inventory"
 )
 
+// ResourceKind represents the kind of orphan resource, which will be submitted
+// to the Delivery Service.
+type ResourceKind string
+
+const (
+	// ResourceKindVirtualMachineAWS represents an AWS Virtual Machine
+	// resource.
+	ResourceKindVirtualMachineAWS ResourceKind = "aws/virtual-machine"
+
+	// ResourceKindVirtualMachineGCP represents a GCP Virtual Machine
+	// resource.
+	ResourceKindVirtualMachineGCP ResourceKind = "gcp/virtual-machine"
+
+	// ResourceKindVirtualMachineAzure represents an Azure Virtual Machine
+	// resource.
+	ResourceKindVirtualMachineAzure ResourceKind = "az/virtual-machine"
+
+	// ResourceKindIPAddressGCP represents a GCP Public IP address resource.
+	ResourceKindIPAddressGCP ResourceKind = "az/virtual-machine"
+)
+
 // Finding is a representation of the [InventoryFinding class]
 //
 // [InventoryFinding class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L622-L641
@@ -72,7 +93,7 @@ type Finding struct {
 
 	// ResourceKind specifies the kind of the orphan resource, e.g. Virtual
 	// Machine, Public IP address, etc.
-	ResourceKind string `json:"resource_kind"`
+	ResourceKind ResourceKind `json:"resource_kind"`
 
 	// ResourceName specifies the unique name of the orphan resource in the
 	// provider.
