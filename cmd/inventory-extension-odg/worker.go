@@ -171,13 +171,14 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	odgclient.SetClient(odgClient)
 
 	if conf.ODG.Auth.Method != config.ODGAuthMethodNone {
 		if err := odgClient.Authenticate(ctx.Context); err != nil {
 			return err
 		}
+		defer odgClient.Logout(ctx.Context)
 	}
+	odgclient.SetClient(odgClient)
 
 	// Create a worker, register handlers and start it up
 	worker := newWorker(conf)
