@@ -163,7 +163,7 @@ func (c *Client) Authenticate(ctx context.Context) error {
 		return ErrNoGithubToken
 	}
 
-	u, err := url.JoinPath(c.endpoint.String(), "auth")
+	u, err := url.JoinPath(c.endpoint.String(), "/auth")
 	if err != nil {
 		return err
 	}
@@ -172,7 +172,6 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	c.setReqHeaders(req)
 
 	query := req.URL.Query()
@@ -201,6 +200,34 @@ func (c *Client) Authenticate(ctx context.Context) error {
 
 	if !gotAuthCookie {
 		return ErrNoAuthCookie
+	}
+
+	return nil
+}
+
+// Logout logs out from the remote API.
+//
+// This operation essentially deletes the [AuthCookie] from the cookie jar.
+func (c *Client) Logout(ctx context.Context) error {
+	u, err := url.JoinPath(c.endpoint.String(), "/auth/logout")
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	if err != nil {
+		return err
+	}
+	c.setReqHeaders(req)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return APIErrorFromResponse(resp)
 	}
 
 	return nil
