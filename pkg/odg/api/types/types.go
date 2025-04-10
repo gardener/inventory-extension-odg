@@ -13,10 +13,39 @@ package types
 
 import "time"
 
+// SeverityLevel specifies the level of severity for a finding.
+type SeverityLevel string
+
+const (
+	// SeverityLevelLow specifies a finding with low severity level
+	SeverityLevelLow = "LOW"
+
+	// SeverityLevelMedium specifies a finding with medium severity level
+	SeverityLevelMedium = "MEDIUM"
+
+	// SeverityLevelHigh specifies a finding with high severity level
+	SeverityLevelHigh = "HIGH"
+)
+
+// ArtefactKind is a representation of the upstream [ArtefactKind class]
+//
+// [ArtefactKind class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L183-L187
+type ArtefactKind string
+
+const (
+	ArtefactKindArtefact ArtefactKind = "artefact"
+	ArtefactKindResource ArtefactKind = "resource"
+	ArtefactKindRuntime  ArtefactKind = "runtime"
+	ArtefactKindSource   ArtefactKind = "source"
+)
+
 // Finding is a representation of the [InventoryFinding class]
 //
 // [InventoryFinding class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L622-L641
 type Finding struct {
+	// Severity specifies the severity of the finding
+	Severity SeverityLevel `json:"severity"`
+
 	// ProviderName specifies the name of the provider, from which orphan
 	// resources originate from, e.g. AWS, Azure, GCP, OpenStack, etc.
 	ProviderName string `json:"provider_name"`
@@ -36,18 +65,6 @@ type Finding struct {
 	// the finding.
 	Attributes map[string]string
 }
-
-// ArtefactKind is a representation of the upstream [ArtefactKind class]
-//
-// [ArtefactKind class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L183-L187
-type ArtefactKind string
-
-const (
-	ArtefactKindArtefact ArtefactKind = "artefact"
-	ArtefactKindResource ArtefactKind = "resource"
-	ArtefactKindRuntime  ArtefactKind = "runtime"
-	ArtefactKindSource   ArtefactKind = "source"
-)
 
 // Metadata is a representation of the upstream [Metadata class]
 //
