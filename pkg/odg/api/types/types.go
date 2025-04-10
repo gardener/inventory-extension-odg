@@ -39,6 +39,26 @@ const (
 	ArtefactKindSource   ArtefactKind = "source"
 )
 
+// Datasource is a representation of the upstream [Datasource class].
+//
+// [Datasource class]: https://github.com/dnaeon/cc-utils/blob/5df6327a17b9358f772084124f997d26b0fdf4ea/dso/model.py#L59-L70
+type Datasource string
+
+const (
+	// DatasourceInventory is the Inventory datasource for findings
+	DatasourceInventory Datasource = "inventory"
+)
+
+// Datatype is a representation of the upstream [Datatype class].
+//
+// [Datatype class]: https://github.com/dnaeon/cc-utils/blob/5df6327a17b9358f772084124f997d26b0fdf4ea/dso/model.py#L270-L286
+type Datatype string
+
+const (
+	// DatatypeInventory represents a finding from the Inventory system
+	DatatypeInventory Datatype = "finding/inventory"
+)
+
 // Finding is a representation of the [InventoryFinding class]
 //
 // [InventoryFinding class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L622-L641
@@ -70,10 +90,10 @@ type Finding struct {
 //
 // [Metadata class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L306-L311
 type Metadata struct {
-	Datasource   string    `json:"datasource"`
-	Type         string    `json:"type"`
-	CreationDate time.Time `json:"creation_date"`
-	LastUpdate   time.Time `json:"last_update"`
+	Datasource   Datasource `json:"datasource"`
+	Type         Datatype   `json:"type"`
+	CreationDate time.Time  `json:"creation_date"`
+	LastUpdate   time.Time  `json:"last_update"`
 }
 
 // LocalArtefactID is a representation of the upstream [LocalArtefactId class]
