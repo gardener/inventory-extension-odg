@@ -18,7 +18,7 @@ import (
 // NewTasksCommand returns a new [cli.Command] for tasks-related operations.
 func NewTasksCommand() *cli.Command {
 	cmd := &cli.Command{
-		Name:    "tasks",
+		Name:    "task",
 		Usage:   "task operations",
 		Aliases: []string{"t"},
 		Subcommands: []*cli.Command{
