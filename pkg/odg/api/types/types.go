@@ -84,7 +84,8 @@ type ComponentArterfactID struct {
 //
 // [ArtefactMetadata class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L871-L906
 type ArtefactMetadata struct {
-	Artefact ComponentArterfactID `json:"artefact"`
-	Meta     Metadata             `json:"meta"`
-	Data     Finding              `json:"data"`
+	Artefact      ComponentArterfactID `json:"artefact"`
+	Meta          Metadata             `json:"meta"`
+	Data          Finding              `json:"data"`
+	DiscoveryDate time.Time            `json:"discovery_date"`
 }
