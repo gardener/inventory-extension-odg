@@ -63,7 +63,7 @@ type Finding struct {
 
 	// Attributes specifies an optional set of attributes to associate with
 	// the finding.
-	Attributes map[string]string
+	Attributes map[string]string `json:"attributes"`
 }
 
 // Metadata is a representation of the upstream [Metadata class]
