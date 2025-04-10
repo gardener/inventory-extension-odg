@@ -80,10 +80,10 @@ type Metadata struct {
 //
 // [LocalArtefactId class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L140-L145
 type LocalArtefactID struct {
-	ArtefactName    string            `json:"artefact_name"`
-	ArtefactType    string            `json:"artefact_type"`
-	ArtefactVersion string            `json:"artefact_version"`
-	ArtefactExtraID map[string]string `json:"artefact_extra_id"`
+	ArtefactName    string `json:"artefact_name"`
+	ArtefactType    string `json:"artefact_type"`
+	ArtefactVersion string `json:"artefact_version"`
+	ArtefactExtraID any    `json:"artefact_extra_id"`
 }
 
 // ComponentArterfactID is a representation of the upstream
