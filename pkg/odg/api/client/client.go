@@ -27,6 +27,14 @@ const AuthCookie = "bearer_token"
 // not return an authentication cookie upon successful authentication.
 var ErrNoAuthCookie = errors.New("no authentication cookie returned")
 
+// ErrNoGithubAPIURL is an error, which is returned when the [Client] is
+// attempting to authenticate, but no Github API URL has been configured.
+var ErrNoGithubAPIURL = errors.New("no github api url configured")
+
+// ErrNoGithubToken is an error, which is returned when the [Client] is
+// attempting to authenticate, but no Github token has been configured.
+var ErrNoGithubToken = errors.New("no github token configured")
+
 // APIError represents an error returned by the remote Delivery Delivery Service
 // API.
 type APIError struct {
@@ -147,6 +155,14 @@ func (c *Client) setReqHeaders(req *http.Request) {
 // Upon successful authentication the Delivery Service returns a cookie with a
 // JWT bearer token, which will be used in subsequent API calls to the service.
 func (c *Client) Authenticate(ctx context.Context) error {
+	if c.authGithubURL == nil {
+		return ErrNoGithubAPIURL
+	}
+
+	if c.authGithubToken == "" {
+		return ErrNoGithubToken
+	}
+
 	u, err := url.JoinPath(c.endpoint.String(), "auth")
 	if err != nil {
 		return err

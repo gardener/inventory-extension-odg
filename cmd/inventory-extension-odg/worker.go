@@ -130,6 +130,8 @@ func newOdgClient(conf *config.Config) (*odgapi.Client, error) {
 			opts,
 			odgapi.WithGithubAuthentication(conf.ODG.Auth.Github.URL, conf.ODG.Auth.Github.Token),
 		)
+	case config.ODGAuthMethodNone:
+		// No authentication, nothing to do here.
 	default:
 		return nil, fmt.Errorf("odg: unknown auth method %s", conf.ODG.Auth.Method)
 	}
@@ -169,10 +171,13 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := odgClient.Authenticate(ctx.Context); err != nil {
-		return err
-	}
 	odgclient.SetClient(odgClient)
+
+	if conf.ODG.Auth.Method != config.ODGAuthMethodNone {
+		if err := odgClient.Authenticate(ctx.Context); err != nil {
+			return err
+		}
+	}
 
 	// Create a worker, register handlers and start it up
 	worker := newWorker(conf)

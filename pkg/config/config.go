@@ -18,6 +18,10 @@ const (
 	// ODGAuthMethodGithub represents authentication method, which uses
 	// Github for querying users' information.
 	ODGAuthMethodGithub = "github"
+
+	// ODGAuthMethodNone is the name of the method, in which the API client
+	// will use no authentication against the remote API service.
+	ODGAuthMethodNone = "none"
 )
 
 // ConfigFormatVersion represents the supported config format version for the

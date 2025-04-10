@@ -55,7 +55,7 @@ odg:
   # Specifies the settings to use when authenticating against the ODG API.
   auth:
     # The authentication method to use.
-    # The currently supported authentication method is `github'.
+    # The currently supported authentication methods are `github' and `none'.
     method: github
 
     # Settings specific to `github' authentication method
