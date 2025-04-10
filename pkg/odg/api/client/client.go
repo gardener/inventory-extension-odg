@@ -147,6 +147,9 @@ func (c *Client) setReqHeaders(req *http.Request) {
 	if c.userAgent != "" {
 		req.Header.Set("User-Agent", c.userAgent)
 	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 }
 
 // Authenticate authenticates the API client against the remote Delivery Service
