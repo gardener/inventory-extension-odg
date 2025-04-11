@@ -327,7 +327,7 @@ func (c *Client) DeleteArtefactMetadata(ctx context.Context, items ...apitypes.A
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent {
 		return APIErrorFromResponse(resp)
 	}
 
