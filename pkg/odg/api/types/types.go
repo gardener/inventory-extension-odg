@@ -162,3 +162,9 @@ type ArtefactMetadata struct {
 	Data          Finding             `json:"data"`
 	DiscoveryDate time.Time           `json:"discovery_date"`
 }
+
+// ArtefactMetadaGroup represents a group of [ArtefactMetadata] items.
+type ArtefactMetadataGroup struct {
+	// Entries contains the group of [ArtefactMetadata] items.
+	Entries []ArtefactMetadata `json:"entries"`
+}
