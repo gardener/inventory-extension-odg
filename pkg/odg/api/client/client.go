@@ -8,12 +8,15 @@ package client
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+
+	apitypes "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/types"
 )
 
 // AuthCookie is the name of the cookie returned by the Delivery
@@ -171,7 +174,7 @@ func (c *Client) Authenticate(ctx context.Context) error {
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return err
 	}
@@ -217,7 +220,43 @@ func (c *Client) Logout(ctx context.Context) error {
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return err
+	}
+	c.setReqHeaders(req)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return APIErrorFromResponse(resp)
+	}
+
+	return nil
+}
+
+// DeleteArtefactMetadata deletes the given list of [apitypes.ArtefactMetadata]
+// from the Delivery Service database.
+func (c *Client) DeleteArtefactMetadata(ctx context.Context, items []apitypes.ArtefactMetadata) error {
+	u, err := url.JoinPath(c.endpoint.String(), "/artefacts/metadata")
+	if err != nil {
+		return err
+	}
+
+	payload := apitypes.ArtefactMetadataGroup{
+		Entries: items,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
