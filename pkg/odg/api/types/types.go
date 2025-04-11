@@ -11,7 +11,11 @@
 // [dso/model.py]: https://github.com/gardener/cc-utils/blob/master/dso/model.py
 package types
 
-import "time"
+import (
+	"time"
+
+	"cloud.google.com/go/civil"
+)
 
 // SeverityLevel specifies the level of severity for a finding.
 type SeverityLevel string
@@ -160,7 +164,7 @@ type ArtefactMetadata struct {
 	Artefact      ComponentArtefactID `json:"artefact"`
 	Meta          Metadata            `json:"meta"`
 	Data          Finding             `json:"data"`
-	DiscoveryDate time.Time           `json:"discovery_date"`
+	DiscoveryDate civil.Date          `json:"discovery_date"`
 }
 
 // ArtefactMetadaGroup represents a group of [ArtefactMetadata] items.
