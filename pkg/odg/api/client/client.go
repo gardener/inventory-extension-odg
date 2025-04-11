@@ -179,7 +179,6 @@ func (c *Client) Authenticate(ctx context.Context) error {
 		return err
 	}
 	c.setReqHeaders(req)
-
 	query := req.URL.Query()
 	query.Add("api_url", c.authGithubURL.String())
 	query.Add("access_token", c.authGithubToken)
@@ -239,9 +238,69 @@ func (c *Client) Logout(ctx context.Context) error {
 	return nil
 }
 
+// QueryArtefactMetadata queries the Delivery Service API for the artefacts of
+// the given datatype and described by the specified
+// [apitypes.ComponentArtefactID] items.
+func (c *Client) QueryArtefactMetadata(ctx context.Context, datatype apitypes.Datatype, items ...apitypes.ComponentArtefactID) ([]apitypes.ArtefactMetadata, error) {
+	if len(items) == 0 {
+		return nil, nil
+	}
+
+	u, err := url.JoinPath(c.endpoint.String(), "/artefacts/metadata/query")
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare payload for querying artefacts
+	payload := apitypes.ComponentArtefactIDGroup{
+		Entries: items,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	c.setReqHeaders(req)
+	query := req.URL.Query()
+	query.Add("type", string(datatype))
+	req.URL.RawQuery = query.Encode()
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, APIErrorFromResponse(resp)
+	}
+
+	// Parse response body and return results to caller
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []apitypes.ArtefactMetadata
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // DeleteArtefactMetadata deletes the given list of [apitypes.ArtefactMetadata]
 // from the Delivery Service database.
-func (c *Client) DeleteArtefactMetadata(ctx context.Context, items []apitypes.ArtefactMetadata) error {
+func (c *Client) DeleteArtefactMetadata(ctx context.Context, items ...apitypes.ArtefactMetadata) error {
+	if len(items) == 0 {
+		return nil
+	}
+
 	u, err := url.JoinPath(c.endpoint.String(), "/artefacts/metadata")
 	if err != nil {
 		return err
