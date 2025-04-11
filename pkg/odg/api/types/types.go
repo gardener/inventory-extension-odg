@@ -168,3 +168,9 @@ type ArtefactMetadataGroup struct {
 	// Entries contains the group of [ArtefactMetadata] items.
 	Entries []ArtefactMetadata `json:"entries"`
 }
+
+// ComponentArtefactIDGroup represents a group of [ComponentArtefactID] items.
+type ComponentArtefactIDGroup struct {
+	// Entries contains the group of [ComponentArtefactID] items.
+	Entries []ComponentArtefactID `json:"entries"`
+}
