@@ -80,6 +80,21 @@ const (
 	ResourceKindIPAddressGCP ResourceKind = "az/virtual-machine"
 )
 
+// ProviderName specifies the name of the provider, from which orphan resources
+// originate from.
+type ProviderName string
+
+const (
+	// ProviderNameAWS represents AWS as the origin of orphan resources.
+	ProviderNameAWS ProviderName = "aws"
+
+	// ProviderNameGCP represents GCP as the origin of orphan resources.
+	ProviderNameGCP ProviderName = "gcp"
+
+	// ProviderNameAzure represents Azure as the origin of orphan resources.
+	ProviderNameAzure ProviderName = "azure"
+)
+
 // Finding is a representation of the [InventoryFinding class]
 //
 // [InventoryFinding class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L622-L641
@@ -89,7 +104,7 @@ type Finding struct {
 
 	// ProviderName specifies the name of the provider, from which orphan
 	// resources originate from, e.g. AWS, Azure, GCP, OpenStack, etc.
-	ProviderName string `json:"provider_name"`
+	ProviderName ProviderName `json:"provider_name"`
 
 	// ResourceKind specifies the kind of the orphan resource, e.g. Virtual
 	// Machine, Public IP address, etc.
