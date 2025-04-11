@@ -169,6 +169,8 @@ Example payload for `odg:task:report-orphan-vms-aws`:
 ``` yaml
 ---
 # Example payload for fetching and reporting orphan AWS EC2 Instances
+component_name: my-ocm-component
+component_version: v0.1.0
 query: |
   SELECT
     i.name,
@@ -197,6 +199,8 @@ Example payload for `odg:task:report-orphan-vms-gcp`:
 ``` yaml
 ---
 # Example payload for fetching and reporting orphan GCP CE Instances
+component_name: my-ocm-component
+component_version: v0.1.0
 query: |
   SELECT
     i.name,
@@ -230,6 +234,8 @@ Example payload for `odg:task:report-orphan-vms-az`:
 ``` yaml
 ---
 # Example payload for fetching and reporting orphan Azure VMs
+component_name: my-ocm-component
+component_version: v0.1.0
 query: |
   SELECT
     vm.name,
@@ -255,6 +261,8 @@ Example payload for `odg:task:report-orphan-ip-address-gcp`:
 ``` yaml
 ---
 # Example payload for fetching and reporting orphan GCP Public IP addresses
+component_name: my-ocm-component
+component_version: v0.1.0
 query: |
   SELECT
     a.rule_id,
@@ -304,26 +312,29 @@ scheduler:
       desc: "Report orphan AWS EC2 Instances"
       queue: odg
       payload: |
-        SELECT
-          i.name,
-          i.arch,
-          i.instance_id,
-          i.instance_type,
-          i.state,
-          i.subnet_id,
-          i.vpc_id,
-          i.platform,
-          i.region_name,
-          i.image_id,
-          i.launch_time,
-          i.account_id,
-          i.vpc_name
-        FROM aws_orphan_instance AS i
-        WHERE
-          i.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
-          AND i.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
-          AND (i.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
-          AND housekeeper_ran_in_last('1 hour', 'aws:model:instance')
+        component_name: my-ocm-component
+        component_version: v0.1.0
+        query: |
+          SELECT
+            i.name,
+            i.arch,
+            i.instance_id,
+            i.instance_type,
+            i.state,
+            i.subnet_id,
+            i.vpc_id,
+            i.platform,
+            i.region_name,
+            i.image_id,
+            i.launch_time,
+            i.account_id,
+            i.vpc_name
+          FROM aws_orphan_instance AS i
+          WHERE
+            i.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
+            AND i.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
+            AND (i.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
+            AND housekeeper_ran_in_last('1 hour', 'aws:model:instance')
 
     # GCP orphan instances
     - name: "odg:task:report-orphan-vms-gcp"
@@ -331,31 +342,34 @@ scheduler:
       desc: "Report orphan GCP Virtual Machines"
       queue: odg
       payload: |
-        SELECT
-          i.name,
-          i.hostname,
-          i.instance_id,
-          i.project_id,
-          i.region,
-          i.zone,
-          i.cpu_platform,
-          i.status,
-          i.status_message,
-          i.creation_timestamp,
-          i.description,
-          i.last_start_timestamp,
-          i.last_stop_timestamp,
-          i.last_suspend_timestamp,
-          i.machine_type,
-          i.gke_cluster_name,
-          i.gke_pool_name
-        FROM gcp_orphan_instance AS i
-        WHERE
-          i.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
-          AND i.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
-          AND (i.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
-          AND (i.gke_cluster_name IS NULL OR (i.gke_cluster_name NOT IN ('dev-soil-gcp', 'staging-soil-gcp', 'canary-soil-gcp', 'live-soil-gcp'))) -- GCP Soil Cluster VMs
-          AND housekeeper_ran_in_last('1 hour', 'gcp:model:instance')
+        component_name: my-ocm-component
+        component_version: v0.1.0
+        query: |
+          SELECT
+            i.name,
+            i.hostname,
+            i.instance_id,
+            i.project_id,
+            i.region,
+            i.zone,
+            i.cpu_platform,
+            i.status,
+            i.status_message,
+            i.creation_timestamp,
+            i.description,
+            i.last_start_timestamp,
+            i.last_stop_timestamp,
+            i.last_suspend_timestamp,
+            i.machine_type,
+            i.gke_cluster_name,
+            i.gke_pool_name
+          FROM gcp_orphan_instance AS i
+          WHERE
+            i.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
+            AND i.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
+            AND (i.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
+            AND (i.gke_cluster_name IS NULL OR (i.gke_cluster_name NOT IN ('dev-soil-gcp', 'staging-soil-gcp', 'canary-soil-gcp', 'live-soil-gcp'))) -- GCP Soil Cluster VMs
+            AND housekeeper_ran_in_last('1 hour', 'gcp:model:instance')
 
     # Azure orphan virtual machines
     - name: "odg:task:report-orphan-vms-az"
@@ -363,23 +377,26 @@ scheduler:
       desc: "Report orphan Azure Virtual Machines"
       queue: odg
       payload: |
-        SELECT
-          vm.name,
-          vm.subscription_id,
-          vm.resource_group,
-          vm.location,
-          vm.provisioning_state,
-          vm.vm_created_at,
-          vm.hyper_v_gen,
-          vm.vm_size,
-          vm.power_state,
-          vm.vm_agent_version
-        FROM az_orphan_vm AS vm
-        WHERE
-          vm.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
-          AND vm.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
-          AND (vm.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
-          AND housekeeper_ran_in_last('1 hour', 'az:model:vm')
+        component_name: my-ocm-component
+        component_version: v0.1.0
+        query: |
+          SELECT
+            vm.name,
+            vm.subscription_id,
+            vm.resource_group,
+            vm.location,
+            vm.provisioning_state,
+            vm.vm_created_at,
+            vm.hyper_v_gen,
+            vm.vm_size,
+            vm.power_state,
+            vm.vm_agent_version
+          FROM az_orphan_vm AS vm
+          WHERE
+            vm.name NOT LIKE 'shoot--it--%' -- Test Machinery VMs
+            AND vm.name NOT LIKE 'test-machine-deployment-%' -- MCM CI test VMs
+            AND (vm.name !~* '[di][0-9]{6}ls?') -- Local setup nodes
+            AND housekeeper_ran_in_last('1 hour', 'az:model:vm')
 
     # GCP orphan Public IP Address
     - name: "odg:task:report-orphan-ip-address-gcp"
@@ -387,30 +404,33 @@ scheduler:
       desc: "Report orphan GCP Public Addresses"
       queue: odg
       payload: |
-        SELECT
-          a.rule_id,
-          a.project_id,
-          a.name,
-          a.ip_address,
-          a.ip_protocol,
-          a.ip_version,
-          a.all_ports,
-          a.allow_global_access,
-          a.backend_service,
-          a.creation_timestamp,
-          a.description,
-          a.load_balancing_scheme,
-          a.network,
-          a.network_tier,
-          a.port_range,
-          a.region,
-          a.service_label,
-          a.service_name,
-          a.subnetwork,
-          a.target
-        FROM gcp_orphan_public_address AS a
-        WHERE
-          housekeeper_ran_in_last('1 hour', 'gcp:model:forwarding_rule')
+        component_name: my-ocm-component
+        component_version: v0.1.0
+        query: |
+          SELECT
+            a.rule_id,
+            a.project_id,
+            a.name,
+            a.ip_address,
+            a.ip_protocol,
+            a.ip_version,
+            a.all_ports,
+            a.allow_global_access,
+            a.backend_service,
+            a.creation_timestamp,
+            a.description,
+            a.load_balancing_scheme,
+            a.network,
+            a.network_tier,
+            a.port_range,
+            a.region,
+            a.service_label,
+            a.service_name,
+            a.subnetwork,
+            a.target
+          FROM gcp_orphan_public_address AS a
+          WHERE
+            housekeeper_ran_in_last('1 hour', 'gcp:model:forwarding_rule')
 ```
 
 # Tests
