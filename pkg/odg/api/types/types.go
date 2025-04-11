@@ -140,10 +140,10 @@ type Metadata struct {
 //
 // [LocalArtefactId class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L140-L145
 type LocalArtefactID struct {
-	ArtefactName    string `json:"artefact_name"`
-	ArtefactType    string `json:"artefact_type"`
-	ArtefactVersion string `json:"artefact_version"`
-	ArtefactExtraID any    `json:"artefact_extra_id"`
+	ArtefactName    string `json:"artefact_name,omitempty"`
+	ArtefactType    string `json:"artefact_type,omitempty"`
+	ArtefactVersion string `json:"artefact_version,omitempty"`
+	ArtefactExtraID any    `json:"artefact_extra_id,omitempty"`
 }
 
 // ComponentArtefactID is a representation of the upstream
@@ -151,10 +151,10 @@ type LocalArtefactID struct {
 //
 // [ComponentArtefactId class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L194-L200
 type ComponentArtefactID struct {
-	ComponentName    string          `json:"component_name"`
-	ComponentVersion string          `json:"component_version"`
+	ComponentName    string          `json:"component_name,omitempty"`
+	ComponentVersion string          `json:"component_version,omitempty"`
 	Artefact         LocalArtefactID `json:"artefact"`
-	ArtefactKind     ArtefactKind    `json:"artefact_kind"`
+	ArtefactKind     ArtefactKind    `json:"artefact_kind,omitempty"`
 }
 
 // ArtefactMetadata is a representation of the upstream [ArtefactMetadata class]
