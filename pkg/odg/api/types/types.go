@@ -142,11 +142,11 @@ type LocalArtefactID struct {
 	ArtefactExtraID any    `json:"artefact_extra_id"`
 }
 
-// ComponentArterfactID is a representation of the upstream
+// ComponentArtefactID is a representation of the upstream
 // [ComponentArtefactId class].
 //
 // [ComponentArtefactId class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L194-L200
-type ComponentArterfactID struct {
+type ComponentArtefactID struct {
 	ComponentName    string          `json:"component_name"`
 	ComponentVersion string          `json:"component_version"`
 	Artefact         LocalArtefactID `json:"artefact"`
@@ -157,8 +157,8 @@ type ComponentArterfactID struct {
 //
 // [ArtefactMetadata class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L871-L906
 type ArtefactMetadata struct {
-	Artefact      ComponentArterfactID `json:"artefact"`
-	Meta          Metadata             `json:"meta"`
-	Data          Finding              `json:"data"`
-	DiscoveryDate time.Time            `json:"discovery_date"`
+	Artefact      ComponentArtefactID `json:"artefact"`
+	Meta          Metadata            `json:"meta"`
+	Data          Finding             `json:"data"`
+	DiscoveryDate time.Time           `json:"discovery_date"`
 }

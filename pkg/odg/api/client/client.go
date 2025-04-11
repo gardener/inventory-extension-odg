@@ -35,7 +35,7 @@ var ErrNoGithubAPIURL = errors.New("no github api url configured")
 // attempting to authenticate, but no Github token has been configured.
 var ErrNoGithubToken = errors.New("no github token configured")
 
-// APIError represents an error returned by the remote Delivery Delivery Service
+// APIError represents an error returned by the remote Delivery Service
 // API.
 type APIError struct {
 	// Method specifies the HTTP method that was used as part of the request
@@ -55,7 +55,7 @@ type APIError struct {
 func APIErrorFromResponse(resp *http.Response) error {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("cannot ready response body: %w", err)
+		return fmt.Errorf("cannot read response body: %w", err)
 	}
 
 	apiErr := &APIError{
