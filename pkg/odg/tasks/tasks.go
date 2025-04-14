@@ -2,6 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+// Package tasks provides tasks for submitting orphan resources discovered by Inventory as
+// findings to the Open Delivery Gear API.
+//
+// The flow for submitting findings to the Delivery Service API is as follows.
+//
+// 1. Fetch orphan resources from Inventory
+//
+// Get the orphan resources from Inventory first, then convert them to
+// findings, which the Delivery Service understands.
+//
+// 2. Wipe out old/previous findings for the artefact type
+//
+// We need to delete the old/previous findings for the artefact type
+// associated with the component name and version. This ensures no old
+// entries exist in the database, since the Delivery Service does not
+// have a retention mechanism for cleaning up such findings.
+//
+// 3. Submit the orphan resources from step 1
+//
+// The latest orphan resources fetched from step 1 are submitted to the
+// Delivery Service API.
 package tasks
 
 import (

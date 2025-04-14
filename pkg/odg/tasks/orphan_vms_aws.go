@@ -6,12 +6,16 @@ package tasks
 
 import (
 	"context"
+	"time"
 
+	"cloud.google.com/go/civil"
 	dbclient "github.com/gardener/inventory/pkg/clients/db"
 	"github.com/gardener/inventory/pkg/core/registry"
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
 
+	apitypes "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/types"
+	odgclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/client"
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
@@ -29,15 +33,79 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		return asynqutils.SkipRetry(err)
 	}
 
+	// 1. Fetch orphan resources and create findings out of them
 	var items []models.OrphanVirtualMachineAWS
 	if err := FetchResourcesFromDB(ctx, dbclient.DB, payload.Query, &items); err != nil {
 		return err
 	}
 
 	logger := asynqutils.GetLogger(ctx)
-	logger.Info("reporting orphan aws instances", "count", len(items))
+	logger.Info("found orphan aws instances", "count", len(items))
 
-	// TODO: Submit the findings
+	now := time.Now()
+	artefacts := make([]apitypes.ArtefactMetadata, 0)
+	for _, item := range items {
+		artefact := apitypes.ArtefactMetadata{
+			Meta: apitypes.Metadata{
+				Datasource:   apitypes.DatasourceInventory,
+				Type:         apitypes.DatatypeInventory,
+				CreationDate: now,
+				LastUpdate:   now,
+			},
+			Artefact: apitypes.ComponentArtefactID{
+				ComponentName:    payload.ComponentName,
+				ComponentVersion: payload.ComponentVersion,
+				Artefact: apitypes.LocalArtefactID{
+					ArtefactName:    item.InstanceID,
+					ArtefactType:    string(apitypes.ResourceKindVirtualMachineAWS),
+					ArtefactVersion: payload.ComponentVersion,
+					ArtefactExtraID: item,
+				},
+				ArtefactKind: apitypes.ArtefactKindRuntime,
+			},
+			Data: apitypes.Finding{
+				Severity:     apitypes.SeverityLevelHigh,
+				ProviderName: apitypes.ProviderNameAWS,
+				ResourceKind: apitypes.ResourceKindVirtualMachineAWS,
+				ResourceName: item.InstanceID,
+				Summary:      "Orphan Virtual Machine",
+				Attributes:   map[string]string{},
+			},
+			DiscoveryDate: civil.DateOf(now),
+		}
+		artefacts = append(artefacts, artefact)
+	}
+
+	// 2. Wipe out old/previous findings for the artefact type
+	oldEntries, err := odgclient.Client.QueryArtefactMetadata(
+		ctx,
+		apitypes.DatatypeInventory,
+		apitypes.ComponentArtefactID{
+			ComponentName:    payload.ComponentName,
+			ComponentVersion: payload.ComponentVersion,
+			ArtefactKind:     apitypes.ArtefactKindRuntime,
+			Artefact: apitypes.LocalArtefactID{
+				ArtefactType: string(apitypes.ResourceKindVirtualMachineAWS),
+			},
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := odgclient.Client.DeleteArtefactMetadata(ctx, oldEntries...); err != nil {
+		return err
+	}
+
+	// 3. Submit orphan resources from step 1.
+	if len(artefacts) == 0 {
+		return nil
+	}
+
+	logger.Info("submitting aws orphan instances to odg", "count", len(artefacts))
+	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
+		return err
+	}
 
 	return nil
 }
