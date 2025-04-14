@@ -81,7 +81,7 @@ const (
 	ResourceKindVirtualMachineAzure ResourceKind = "az/virtual-machine"
 
 	// ResourceKindIPAddressGCP represents a GCP Public IP address resource.
-	ResourceKindIPAddressGCP ResourceKind = "az/virtual-machine"
+	ResourceKindIPAddressGCP ResourceKind = "gcp/public-ip-address"
 )
 
 // ProviderName specifies the name of the provider, from which orphan resources
