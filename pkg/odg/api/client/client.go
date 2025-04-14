@@ -334,6 +334,48 @@ func (c *Client) DeleteArtefactMetadata(ctx context.Context, items ...apitypes.A
 	return nil
 }
 
+// SubmitArtefactMetadata submits the given [apitypes.ArtefactMetadata] items to
+// the Delivery Service API.
+//
+// The provided artefacts are either created, if they don't already exist, or
+// are updated when they are already present in the Delivery Service database.
+func (c *Client) SubmitArtefactMetadata(ctx context.Context, items ...apitypes.ArtefactMetadata) error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	u, err := url.JoinPath(c.endpoint.String(), "/artefacts/metadata")
+	if err != nil {
+		return err
+	}
+
+	payload := apitypes.ArtefactMetadataGroup{
+		Entries: items,
+	}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	c.setReqHeaders(req)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return APIErrorFromResponse(resp)
+	}
+
+	return nil
+}
+
 // WithGithubAuthentication configures the [Client] to authenticate against the
 // remote Delivery Service using a Github access token.
 //
