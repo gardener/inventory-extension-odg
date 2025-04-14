@@ -88,11 +88,11 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		},
 	)
 	if err != nil {
-		return err
+		return MaybeSkipRetry(err)
 	}
 
 	if err := odgclient.Client.DeleteArtefactMetadata(ctx, oldEntries...); err != nil {
-		return err
+		return MaybeSkipRetry(err)
 	}
 
 	// 3. Submit orphan resources from step 1.
@@ -102,7 +102,7 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 
 	logger.Info("submitting aws orphan instances to odg", "count", len(artefacts))
 	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
-		return err
+		return MaybeSkipRetry(err)
 	}
 
 	return nil

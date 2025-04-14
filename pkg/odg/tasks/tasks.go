@@ -31,10 +31,15 @@ package tasks
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/http"
+	"slices"
 
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
 	"github.com/uptrace/bun"
+
+	apiclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
 )
 
 // ErrNoPayload is an error, which is returned by task handlers, which expect a
@@ -101,4 +106,23 @@ func DecodePayload(t *asynq.Task) (*Payload, error) {
 // query into the given dest value.
 func FetchResourcesFromDB(ctx context.Context, db *bun.DB, query string, dest any) error {
 	return db.NewRaw(query).Scan(ctx, dest)
+}
+
+// MaybeSkipRetry wraps known API errors with [asynq.SkipRetry], so that the
+// tasks from which these errors originate from won't be retried.
+func MaybeSkipRetry(err error) error {
+	// Skip retry for the following HTTP status codes returned by the remote
+	// Delivery Service API.
+	skipHttpCodes := []int{
+		http.StatusInternalServerError,
+	}
+
+	var apiErr *apiclient.APIError
+	if errors.As(err, &apiErr) {
+		if slices.Contains(skipHttpCodes, apiErr.StatusCode) {
+			return fmt.Errorf("%w (%w)", err, asynq.SkipRetry)
+		}
+	}
+
+	return err
 }
