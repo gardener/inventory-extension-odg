@@ -19,11 +19,9 @@ import (
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
-const (
-	// TaskReportOrphanVirtualMachinesAWS is the name of the task, which
-	// reports orphan AWS EC2 Instances as findings.
-	TaskReportOrphanVirtualMachinesAWS = "odg:task:report-orphan-vms-aws"
-)
+// TaskReportOrphanVirtualMachinesAWS is the name of the task, which
+// reports orphan AWS EC2 Instances as findings.
+const TaskReportOrphanVirtualMachinesAWS = "odg:task:report-orphan-vms-aws"
 
 // HandleReportOrphanVirtualMachinesAWS is a handler, which reports orphan AWS
 // virtual machines as findings.

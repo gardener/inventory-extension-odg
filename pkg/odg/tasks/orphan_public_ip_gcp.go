@@ -15,11 +15,9 @@ import (
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
-const (
-	// TaskReportOrphanPublicAddressGCP is the name of the task, which
-	// reports orphan GCP public IP addresses as findings.
-	TaskReportOrphanPublicAddressGCP = "odg:task:report-orphan-ip-address-gcp"
-)
+// TaskReportOrphanPublicAddressGCP is the name of the task, which
+// reports orphan GCP public IP addresses as findings.
+const TaskReportOrphanPublicAddressGCP = "odg:task:report-orphan-ip-address-gcp"
 
 // HandleReportOrphanPublicAddressGCP is a handler, which reports orphan GCP
 // public IP addresses as findings.
@@ -35,7 +33,7 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 	}
 
 	logger := asynqutils.GetLogger(ctx)
-	logger.Info("reporting orphan gcp public addresses", "count", len(items))
+	logger.Info("found orphan gcp public addresses", "count", len(items))
 
 	// TODO: Submit the findings
 

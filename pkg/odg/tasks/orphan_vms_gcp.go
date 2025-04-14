@@ -15,11 +15,9 @@ import (
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
-const (
-	// TaskReportOrphanVirtualMachinesGCP is the name of the task, which
-	// reports orphan GCP Virtual Machines as findings.
-	TaskReportOrphanVirtualMachinesGCP = "odg:task:report-orphan-vms-gcp"
-)
+// TaskReportOrphanVirtualMachinesGCP is the name of the task, which
+// reports orphan GCP Virtual Machines as findings.
+const TaskReportOrphanVirtualMachinesGCP = "odg:task:report-orphan-vms-gcp"
 
 // HandleReportOrphanVirtualMachinesGCP is a handler, which reports orphan
 // GCP virtual machines as findings.
@@ -35,7 +33,7 @@ func HandleReportOrphanVirtualMachinesGCP(ctx context.Context, t *asynq.Task) er
 	}
 
 	logger := asynqutils.GetLogger(ctx)
-	logger.Info("reporting orphan gcp instances", "count", len(items))
+	logger.Info("found orphan gcp instances", "count", len(items))
 
 	// TODO: Submit the findings
 

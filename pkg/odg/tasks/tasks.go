@@ -23,6 +23,9 @@
 //
 // The latest orphan resources fetched from step 1 are submitted to the
 // Delivery Service API.
+//
+// If we have no orphan resources to report, then we don't report anything to
+// the remote API.
 package tasks
 
 import (

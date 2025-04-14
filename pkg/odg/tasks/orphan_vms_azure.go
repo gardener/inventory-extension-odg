@@ -15,11 +15,9 @@ import (
 	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
 )
 
-const (
-	// TaskReportOrphanVirtualMachinesAzure is the name of the task, which
-	// reports orphan Azure Virtual Machines as findings.
-	TaskReportOrphanVirtualMachinesAzure = "odg:task:report-orphan-vms-az"
-)
+// TaskReportOrphanVirtualMachinesAzure is the name of the task, which
+// reports orphan Azure Virtual Machines as findings.
+const TaskReportOrphanVirtualMachinesAzure = "odg:task:report-orphan-vms-az"
 
 // HandleReportOrphanVirtualMachinesAzure is a handler, which reports orphan
 // Azure virtual machines as findings.
@@ -35,7 +33,7 @@ func HandleReportOrphanVirtualMachinesAzure(ctx context.Context, t *asynq.Task) 
 	}
 
 	logger := asynqutils.GetLogger(ctx)
-	logger.Info("reporting orphan azure instances", "count", len(items))
+	logger.Info("found orphan azure instances", "count", len(items))
 
 	// TODO: Submit the findings
 
