@@ -166,7 +166,11 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	defer db.Close()
 
 	// Configure the Open Delivery Gear API client
-	slog.Info("configuring open delivery gear api client")
+	slog.Info(
+		"configuring open delivery gear api client",
+		"endpoint", conf.ODG.Endpoint,
+		"auth", conf.ODG.Auth.Method,
+	)
 	odgClient, err := newOdgClient(conf)
 	if err != nil {
 		return err
