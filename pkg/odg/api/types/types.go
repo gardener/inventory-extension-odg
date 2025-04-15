@@ -123,7 +123,7 @@ type Finding struct {
 
 	// Attributes specifies an optional set of attributes to associate with
 	// the finding.
-	Attributes map[string]string `json:"attributes"`
+	Attributes any `json:"attributes"`
 }
 
 // Metadata is a representation of the upstream [Metadata class]
@@ -140,10 +140,10 @@ type Metadata struct {
 //
 // [LocalArtefactId class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L140-L145
 type LocalArtefactID struct {
-	ArtefactName    string `json:"artefact_name,omitempty"`
-	ArtefactType    string `json:"artefact_type,omitempty"`
-	ArtefactVersion string `json:"artefact_version,omitempty"`
-	ArtefactExtraID any    `json:"artefact_extra_id,omitempty"`
+	ArtefactName    string            `json:"artefact_name,omitempty"`
+	ArtefactType    string            `json:"artefact_type,omitempty"`
+	ArtefactVersion string            `json:"artefact_version,omitempty"`
+	ArtefactExtraID map[string]string `json:"artefact_extra_id,omitempty"`
 }
 
 // ComponentArtefactID is a representation of the upstream
