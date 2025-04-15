@@ -180,7 +180,9 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 		if err := odgClient.Authenticate(ctx.Context); err != nil {
 			return err
 		}
-		defer odgClient.Logout(ctx.Context)
+		defer func() {
+			_ = odgClient.Logout(ctx.Context)
+		}()
 	}
 	odgclient.SetClient(odgClient)
 

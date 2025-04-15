@@ -58,7 +58,7 @@ func HandleReportOrphanVirtualMachinesGCP(ctx context.Context, t *asynq.Task) er
 					ArtefactType:    string(apitypes.ResourceKindVirtualMachineGCP),
 					ArtefactVersion: payload.ComponentVersion,
 					ArtefactExtraID: map[string]string{
-						"instance_id": strconv.Itoa(int(item.InstanceID)),
+						"instance_id": strconv.FormatUint(item.InstanceID, 10),
 						"project_id":  item.ProjectID,
 					},
 				},
@@ -68,7 +68,7 @@ func HandleReportOrphanVirtualMachinesGCP(ctx context.Context, t *asynq.Task) er
 				Severity:     apitypes.SeverityLevelHigh,
 				ProviderName: apitypes.ProviderNameGCP,
 				ResourceKind: apitypes.ResourceKindVirtualMachineGCP,
-				ResourceName: strconv.Itoa(int(item.InstanceID)),
+				ResourceName: strconv.FormatUint(item.InstanceID, 10),
 				Summary:      "Orphan Virtual Machine",
 				Attributes:   item,
 			},

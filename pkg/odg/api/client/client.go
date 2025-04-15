@@ -241,7 +241,10 @@ func (c *Client) Logout(ctx context.Context) error {
 // QueryArtefactMetadata queries the Delivery Service API for the artefacts of
 // the given datatype and described by the specified
 // [apitypes.ComponentArtefactID] items.
-func (c *Client) QueryArtefactMetadata(ctx context.Context, datatype apitypes.Datatype, items ...apitypes.ComponentArtefactID) ([]apitypes.ArtefactMetadata, error) {
+func (c *Client) QueryArtefactMetadata(
+	ctx context.Context,
+	datatype apitypes.Datatype,
+	items ...apitypes.ComponentArtefactID) ([]apitypes.ArtefactMetadata, error) {
 	if len(items) == 0 {
 		return nil, nil
 	}
