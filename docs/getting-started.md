@@ -154,7 +154,7 @@ The `inventory-extension-odg` extension provides the following tasks.
 - `odg:task:report-orphan-vms-aws` - reports orphan AWS EC2 instances as findings
 - `odg:task:report-orphan-vms-gcp` - reports orphan GCP Compute Engine instances as findings
 - `odg:task:report-orphan-vms-az` - reports orphan Azure Virtual Machines as findings
-- `odg:task:report-orphan-ip-address-gcp` - reports orphan GCP Public IP Addresses as findings
+- `odg:task:report-orphan-ip-addresses-gcp` - reports orphan GCP Public IP Addresses as findings
 
 Each of these tasks expects a payload, which represents the query to be used
 when fetching orphan resources from the database.
@@ -399,7 +399,7 @@ scheduler:
             AND housekeeper_ran_in_last('1 hour', 'az:model:vm')
 
     # GCP orphan Public IP Address
-    - name: "odg:task:report-orphan-ip-address-gcp"
+    - name: "odg:task:report-orphan-ip-addresses-gcp"
       spec: "@every 7d"
       desc: "Report orphan GCP Public Addresses"
       queue: odg
