@@ -57,7 +57,11 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 					ArtefactName:    item.InstanceID,
 					ArtefactType:    string(apitypes.ResourceKindVirtualMachineAWS),
 					ArtefactVersion: payload.ComponentVersion,
-					ArtefactExtraID: item,
+					ArtefactExtraID: map[string]string{
+						"vpc_id":      item.VpcID,
+						"region_name": item.RegionName,
+						"account_id":  item.AccountID,
+					},
 				},
 				ArtefactKind: apitypes.ArtefactKindRuntime,
 			},
@@ -67,7 +71,7 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 				ResourceKind: apitypes.ResourceKindVirtualMachineAWS,
 				ResourceName: item.InstanceID,
 				Summary:      "Orphan Virtual Machine",
-				Attributes:   map[string]string{},
+				Attributes:   item,
 			},
 			DiscoveryDate: civil.DateOf(now),
 		}
@@ -91,6 +95,7 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		return MaybeSkipRetry(err)
 	}
 
+	logger.Info("deleting old orphan aws instances from odg", "count", len(oldEntries))
 	if err := odgclient.Client.DeleteArtefactMetadata(ctx, oldEntries...); err != nil {
 		return MaybeSkipRetry(err)
 	}
@@ -100,7 +105,7 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		return nil
 	}
 
-	logger.Info("submitting aws orphan instances to odg", "count", len(artefacts))
+	logger.Info("submitting orphan aws instances to odg", "count", len(artefacts))
 	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}
