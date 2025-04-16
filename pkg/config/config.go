@@ -94,6 +94,11 @@ func Parse(paths ...string) (*Config, error) {
 	var conf Config
 
 	for _, path := range paths {
+		// Ignore empty paths
+		if path == "" {
+			continue
+		}
+
 		if err := coreconfig.ParseFileInto(path, &conf); err != nil {
 			return nil, err
 		}
