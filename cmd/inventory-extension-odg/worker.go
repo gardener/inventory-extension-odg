@@ -55,10 +55,13 @@ func NewWorkerCommand() *cli.Command {
 				Action:  execWorkerPingCommand,
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:     "worker",
-						Usage:    "worker name to ping",
-						Required: true,
-						Aliases:  []string{"name"},
+						Name:    "worker",
+						Usage:   "worker name to ping",
+						Aliases: []string{"name"},
+					},
+					&cli.BoolFlag{
+						Name:  "local",
+						Usage: "ping local workers",
 					},
 				},
 			},
@@ -212,6 +215,21 @@ func execWorkerPingCommand(ctx *cli.Context) error {
 	}
 
 	workerName := ctx.String("worker")
+	localWorker := ctx.Bool("local")
+
+	switch {
+	case workerName == "" && !localWorker:
+		return errors.New("must specify either --worker or --local flag")
+	case workerName != "" && localWorker:
+		return errors.New("cannot specify --worker and --local at the same time")
+	case localWorker:
+		hostname, err := os.Hostname()
+		if err != nil {
+			return err
+		}
+		workerName = hostname
+	}
+
 	redisClientOpt := asynqutils.NewRedisClientOptFromConfig(conf.Redis)
 	inspector := asynq.NewInspector(redisClientOpt)
 	defer inspector.Close()
