@@ -109,7 +109,7 @@ func FetchResourcesFromDB(ctx context.Context, db *bun.DB, query string, dest an
 }
 
 // MaybeSkipRetry wraps known API errors with [asynq.SkipRetry], so that the
-// tasks from which these errors originate from won't be retried.
+// tasks which these errors originate from won't be retried.
 func MaybeSkipRetry(err error) error {
 	// Skip retry for the following HTTP status codes returned by the remote
 	// Delivery Service API.
