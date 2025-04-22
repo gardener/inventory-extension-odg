@@ -181,7 +181,7 @@ require (
 	github.com/ultraware/funlen v0.2.0 // indirect
 	github.com/ultraware/whitespace v0.2.0 // indirect
 	github.com/uptrace/bun/dialect/pgdialect v1.2.11 // indirect
-	github.com/uptrace/bun/driver/pgdriver v1.2.9 // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.2.11 // indirect
 	github.com/uudashr/gocognit v1.2.0 // indirect
 	github.com/uudashr/iface v1.3.1 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
