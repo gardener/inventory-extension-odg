@@ -1,0 +1,22 @@
+---
+# Example payload for fetching and reporting orphan AWS EC2 Instances
+component_name: my-ocm-component
+component_version: v0.1.0
+query: |
+  SELECT
+    i.name,
+    i.arch,
+    i.instance_id,
+    i.instance_type,
+    i.state,
+    i.subnet_id,
+    i.vpc_id,
+    i.platform,
+    i.region_name,
+    i.image_id,
+    i.launch_time,
+    i.account_id,
+    i.vpc_name
+  FROM aws_orphan_instance AS i
+  WHERE
+    housekeeper_ran_in_last('1 hour', 'aws:model:instance')

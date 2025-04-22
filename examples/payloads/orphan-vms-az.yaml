@@ -1,0 +1,19 @@
+---
+# Example payload for fetching and reporting orphan Azure VMs
+component_name: my-ocm-component
+component_version: v0.1.0
+query: |
+  SELECT
+    vm.name,
+    vm.subscription_id,
+    vm.resource_group,
+    vm.location,
+    vm.provisioning_state,
+    vm.vm_created_at,
+    vm.hyper_v_gen,
+    vm.vm_size,
+    vm.power_state,
+    vm.vm_agent_version
+  FROM az_orphan_vm AS vm
+  WHERE
+    housekeeper_ran_in_last('1 hour', 'az:model:vm')

@@ -1,0 +1,29 @@
+---
+# Example payload for fetching and reporting orphan GCP Public IP addresses
+component_name: my-ocm-component
+component_version: v0.1.0
+query: |
+  SELECT
+    a.rule_id,
+    a.project_id,
+    a.name,
+    a.ip_address,
+    a.ip_protocol,
+    a.ip_version,
+    a.all_ports,
+    a.allow_global_access,
+    a.backend_service,
+    a.creation_timestamp,
+    a.description,
+    a.load_balancing_scheme,
+    a.network,
+    a.network_tier,
+    a.port_range,
+    a.region,
+    a.service_label,
+    a.service_name,
+    a.subnetwork,
+    a.target
+  FROM gcp_orphan_public_address AS a
+  WHERE
+    housekeeper_ran_in_last('1 hour', 'gcp:model:forwarding_rule')

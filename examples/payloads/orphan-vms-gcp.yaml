@@ -1,0 +1,26 @@
+---
+# Example payload for fetching and reporting orphan GCP CE Instances
+component_name: my-ocm-component
+component_version: v0.1.0
+query: |
+  SELECT
+    i.name,
+    i.hostname,
+    i.instance_id,
+    i.project_id,
+    i.region,
+    i.zone,
+    i.cpu_platform,
+    i.status,
+    i.status_message,
+    i.creation_timestamp,
+    i.description,
+    i.last_start_timestamp,
+    i.last_stop_timestamp,
+    i.last_suspend_timestamp,
+    i.machine_type,
+    i.gke_cluster_name,
+    i.gke_pool_name
+  FROM gcp_orphan_instance AS i
+  WHERE
+    housekeeper_ran_in_last('1 hour', 'gcp:model:instance')
