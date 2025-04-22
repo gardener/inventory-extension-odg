@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: extension-odg
+    app.kubernetes.io/component: extension-odg
+    app.kubernetes.io/part-of: inventory
+    app.kubernetes.io/managed-by: kustomize
+  name: extension-odg
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: extension-odg
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: extension-odg
+    spec:
+      containers:
+      - name: worker
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - "ALL"
+        command:
+          - /app/inventory-extension-odg
+        args:
+          - worker
+          - start
+        image: europe-docker.pkg.dev/gardener-project/releases/gardener/inventory-extension-odg:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: extension-odg-config
+            mountPath: /app/config
+            readOnly: true
+        env:
+          - name: INVENTORY_EXTENSION_CONFIG
+            value: /app/config/config.yaml
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        livenessProbe:
+          failureThreshold: 3
+          exec:
+            command: ["/app/inventory-extension-odg", "worker", "ping", "--local"]
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 3
+          exec:
+            command: ["/app/inventory-extension-odg", "worker", "ping", "--local"]
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: extension-odg-config
+          secret:
+            secretName: extension-odg-config

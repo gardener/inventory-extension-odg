@@ -1,0 +1,69 @@
+---
+version: v1alpha1
+debug: false
+
+# Logging settings
+logging:
+  # Output format to use: [text|json]
+  format: text
+  # If set to true, the log events will contain the source code position of the
+  # log statements.
+  add_source: false
+  # Log level: [info|warn|error|debug]
+  level: info
+
+  # An optional key/value map of attributes to add to each log event
+  # attributes:
+  #   landscape: dev
+
+# Redis settings
+redis:
+  endpoint: redis:6379
+
+# Database settings
+database:
+  dsn: "postgresql://inventory:p4ssw0rd@postgres:5432/inventory?sslmode=disable"
+
+# Worker settings
+worker:
+  # Concurrency level
+  concurrency: 100
+
+  # Priority queue configuration.
+  #
+  # Check the following documentation for more details about how priority queues
+  # work.
+  # See https://github.com/hibiken/asynq/wiki/Queue-Priority
+  queues:
+    odg: 1
+
+  # Strict priority specifies whether queue priority is treated strictly.
+  #
+  # When set to true tasks from queues with higher priority are always processed
+  # first, and tasks from queues with lower priority are processed only after
+  # higher priority queues are empty.
+  strict_priority: false
+
+# Open Delivery Gear settings
+odg:
+  # Specifies the base API endpoint of the ODG API
+  endpoint: http://localhost:8080/
+
+  # Specifies the User-Agent header to configure on the API client
+  user_agent: gardener-inventory-extension-odg/0.1.0
+
+  # Specifies the settings to use when authenticating against the ODG API.
+  auth:
+    # The authentication method to use.
+    # The currently supported authentication methods are `github' and `none'.
+    method: github
+
+    # Settings specific to `github' authentication method
+    github:
+      # The base Github API URL, which the Delivery Service will use to query
+      # user's information with the provided access token.
+      url: https://my-github-enterprise.com/api/v3
+
+      # Specifies the Github access token which will be used to query the
+      # information about the user associated with the token.
+      token: my-personal-access-token

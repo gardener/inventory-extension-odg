@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: inventory-extension-odg
+
+namespace: default
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: extension-odg-config
+    files:
+      - files/config.yaml
