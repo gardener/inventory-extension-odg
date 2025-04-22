@@ -14,9 +14,9 @@ import (
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
 
-	apitypes "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/types"
-	odgclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/client"
-	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/models"
+	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
+	odgclient "github.com/gardener/inventory-extension-odg/pkg/odg/client"
+	"github.com/gardener/inventory-extension-odg/pkg/odg/models"
 )
 
 // TaskReportOrphanVirtualMachinesAWS is the name of the task, which

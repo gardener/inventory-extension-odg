@@ -16,7 +16,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 
-	apitypes "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/types"
+	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 )
 
 // AuthCookie is the name of the cookie returned by the Delivery

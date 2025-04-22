@@ -5,7 +5,7 @@
 package client
 
 import (
-	odgapi "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
+	odgapi "github.com/gardener/inventory-extension-odg/pkg/odg/api/client"
 )
 
 // Client is the Open Delivery Gear API client used by the various tasks.

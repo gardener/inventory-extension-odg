@@ -39,7 +39,7 @@ import (
 	"github.com/hibiken/asynq"
 	"github.com/uptrace/bun"
 
-	apiclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
+	apiclient "github.com/gardener/inventory-extension-odg/pkg/odg/api/client"
 )
 
 // ErrNoPayload is an error, which is returned by task handlers, which expect a

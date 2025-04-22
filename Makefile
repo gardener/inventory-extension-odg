@@ -27,7 +27,7 @@ lint:
 $(BINARY): $(SRC_DIRS) | $(LOCAL_BIN)
 	go build \
 		-o $(BINARY) \
-		-ldflags="-X 'github.tools.sap/kubernetes/inventory-extension-odg/pkg/version.Version=${EFFECTIVE_VERSION}'" \
+		-ldflags="-X 'github.com/gardener/inventory-extension-odg/pkg/version.Version=${EFFECTIVE_VERSION}'" \
 		./cmd/inventory-extension-odg
 
 .PHONY: build

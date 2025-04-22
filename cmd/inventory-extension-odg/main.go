@@ -10,8 +10,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	_ "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/tasks"
-	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/version"
+	_ "github.com/gardener/inventory-extension-odg/pkg/odg/tasks"
+	"github.com/gardener/inventory-extension-odg/pkg/version"
 )
 
 func main() {

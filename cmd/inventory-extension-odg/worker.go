@@ -21,9 +21,9 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/urfave/cli/v2"
 
-	"github.tools.sap/kubernetes/inventory-extension-odg/pkg/config"
-	odgapi "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/api/client"
-	odgclient "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/client"
+	"github.com/gardener/inventory-extension-odg/pkg/config"
+	odgapi "github.com/gardener/inventory-extension-odg/pkg/odg/api/client"
+	odgclient "github.com/gardener/inventory-extension-odg/pkg/odg/client"
 )
 
 // NewWorkerCommand returns a new [cli.Command] for worker-related operations.

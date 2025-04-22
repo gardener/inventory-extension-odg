@@ -12,7 +12,7 @@ import (
 	"github.com/hibiken/asynq"
 	"github.com/urfave/cli/v2"
 
-	_ "github.tools.sap/kubernetes/inventory-extension-odg/pkg/odg/tasks"
+	_ "github.com/gardener/inventory-extension-odg/pkg/odg/tasks"
 )
 
 // NewTasksCommand returns a new [cli.Command] for tasks-related operations.
