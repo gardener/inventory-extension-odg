@@ -3,7 +3,7 @@ module github.com/gardener/inventory-extension-odg
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.120.0
+	cloud.google.com/go v0.120.1
 	github.com/gardener/inventory v0.1.10
 	github.com/hibiken/asynq v0.25.1
 	github.com/uptrace/bun v1.2.11
@@ -207,9 +207,9 @@ require (
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/time v0.10.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
-	google.golang.org/protobuf v1.36.5 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
