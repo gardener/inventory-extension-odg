@@ -1,0 +1,10 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      mode: snapshot
