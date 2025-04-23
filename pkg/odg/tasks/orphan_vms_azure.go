@@ -105,7 +105,12 @@ func HandleReportOrphanVirtualMachinesAzure(ctx context.Context, t *asynq.Task) 
 		return nil
 	}
 
-	logger.Info("submitting orphan azure instances to odg", "count", len(artefacts))
+	logger.Info(
+		"submitting orphan azure instances to odg",
+		"count", len(artefacts),
+		"component_name", payload.ComponentName,
+		"component_version", payload.ComponentVersion,
+	)
 	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}

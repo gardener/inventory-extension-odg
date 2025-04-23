@@ -55,11 +55,6 @@ var ErrNoQuery = errors.New("no query specified")
 // was provided.
 var ErrNoComponentName = errors.New("no component name specified")
 
-// ErrNoComponentVersion is an error, which is returned by task handlers, which
-// expect an OCM component version to be specified as part of the payload, but
-// none was provided.
-var ErrNoComponentVersion = errors.New("no component version specified")
-
 // Payload represents the payload expected by tasks which report orphan
 // resources to the Open Delivery Gear API.
 type Payload struct {
@@ -93,10 +88,6 @@ func DecodePayload(t *asynq.Task) (*Payload, error) {
 
 	if payload.ComponentName == "" {
 		return nil, ErrNoComponentName
-	}
-
-	if payload.ComponentVersion == "" {
-		return nil, ErrNoComponentVersion
 	}
 
 	return &payload, nil

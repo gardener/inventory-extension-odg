@@ -105,7 +105,12 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 		return nil
 	}
 
-	logger.Info("submitting orphan gcp public ip addresses to odg", "count", len(artefacts))
+	logger.Info(
+		"submitting orphan gcp public ip addresses to odg",
+		"count", len(artefacts),
+		"component_name", payload.ComponentName,
+		"component_version", payload.ComponentVersion,
+	)
 	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}
