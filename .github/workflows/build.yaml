@@ -1,0 +1,73 @@
+name: Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        required: true
+        type: string
+        default: snapshot
+        description: |
+          the "mode" to use. passed to `params` workflow.
+          values:
+            - snapshot
+            - release
+
+jobs:
+  prepare:
+    uses: gardener/cc-utils/.github/workflows/prepare.yaml@master
+    with:
+      mode: ${{ inputs.mode || 'snapshot' }}
+
+  verify:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: verify
+        run: |
+          set -eu
+          .ci/verify
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: build
+        run: |
+          set -eu
+          .ci/build
+
+  oci-images:
+    needs:
+      - prepare
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: gardener/cc-utils/.github/workflows/oci-ocm.yaml@master
+    with:
+      name: inventory-extension-odg
+      version: ${{ needs.prepare.outputs.version }}
+      oci-registry: ${{ needs.prepare.outputs.oci-registry }}
+      oci-repository: gardener/inventory-extension-odg
+      dockerfile: Dockerfile
+      oci-platforms: linux/amd64,linux/arm64
+      ocm-labels: |
+        name: gardener.cloud/cve-categorisation
+        value:
+          network_exposure: protected
+          authentication_enforced: false
+          user_interaction: gardener-operator
+          confidentiality_requirement: high
+          integrity_requirement: high
+          availability_requirement: high
