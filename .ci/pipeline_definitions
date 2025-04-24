@@ -44,7 +44,7 @@ inventory-extension-odg:
           retention_policy: 'clean-snapshots'
         draft_release: ~
         options:
-          public_build_logs: false
+          public_build_logs: true
     pull-request:
       traits:
         pull-request: ~
@@ -52,7 +52,7 @@ inventory-extension-odg:
           ocm_repository_mappings:
             - repository: europe-docker.pkg.dev/gardener-project/releases
         options:
-          public_build_logs: false
+          public_build_logs: true
     release:
       traits:
         version:
