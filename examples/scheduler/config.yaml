@@ -4,7 +4,7 @@ scheduler:
   jobs:
     # AWS orphan instances
     - name: "odg:task:report-orphan-vms-aws"
-      spec: "@every 7d"
+      spec: "@every 168h"
       desc: "Report orphan AWS EC2 Instances"
       queue: odg
       payload: |
@@ -31,7 +31,7 @@ scheduler:
 
     # GCP orphan instances
     - name: "odg:task:report-orphan-vms-gcp"
-      spec: "@every 7d"
+      spec: "@every 168h"
       desc: "Report orphan GCP Virtual Machines"
       queue: odg
       payload: |
@@ -62,7 +62,7 @@ scheduler:
 
     # Azure orphan virtual machines
     - name: "odg:task:report-orphan-vms-az"
-      spec: "@every 7d"
+      spec: "@every 168h"
       desc: "Report orphan Azure Virtual Machines"
       queue: odg
       payload: |
@@ -86,7 +86,7 @@ scheduler:
 
     # GCP orphan Public IP Address
     - name: "odg:task:report-orphan-ip-addresses-gcp"
-      spec: "@every 7d"
+      spec: "@every 168h"
       desc: "Report orphan GCP Public Addresses"
       queue: odg
       payload: |
