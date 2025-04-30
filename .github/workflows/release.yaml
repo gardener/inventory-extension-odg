@@ -3,15 +3,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yaml
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  publish-oci:
+    uses: ./.github/workflows/oci-images.yaml
+    needs:
+      - test
     with:
       mode: release
 
   release-and-bump:
     uses: gardener/cc-utils/.github/workflows/release.yaml@master
     needs:
-      - build
+      - publish-oci
     secrets:
       github-app-secret-key: ${{ secrets.GARDENER_GITHUB_ACTIONS_PRIVATE_KEY }}
     with:
