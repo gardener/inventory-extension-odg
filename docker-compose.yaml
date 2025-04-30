@@ -16,14 +16,14 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  valkey:
     ports:
       - 6379:6379
-    image: redis:7.4-bookworm
+    image: valkey/valkey:8.1-alpine
     volumes:
-      - ./dev/local/redis:/data
+      - ./dev/local/valkey:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,7 +42,7 @@ services:
     environment:
       INVENTORY_EXTENSION_CONFIG: /home/nonroot/config.yaml
     depends_on:
-      redis:
+      valkey:
         condition: service_healthy
       postgres:
         condition: service_healthy
