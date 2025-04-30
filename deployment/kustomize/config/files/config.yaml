@@ -18,7 +18,7 @@ logging:
 
 # Redis settings
 redis:
-  endpoint: redis:6379
+  endpoint: valkey:6379
 
 # Database settings
 database:

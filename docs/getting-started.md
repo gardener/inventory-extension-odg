@@ -113,7 +113,7 @@ make build
 ## Docker Compose
 
 You can also run a local development environment using Docker Compose, which
-will start up Redis, PostgreSQL and the extension worker for you. In order to do
+will start up Valkey, PostgreSQL and the extension worker for you. In order to do
 that, simply execute the following command.
 
 ``` shell
@@ -122,11 +122,11 @@ make docker-compose-up
 
 The services which will be started are summarized in the table below.
 
-| Service    | Description                   |
-|:-----------|:------------------------------|
-| `postgres` | PostgreSQL database           |
-| `worker`   | Inventory Extension Worker    |
-| `redis`    | Redis used as a message queue |
+| Service    | Description                    |
+|:-----------|:-------------------------------|
+| `postgres` | PostgreSQL database            |
+| `worker`   | Inventory Extension Worker     |
+| `valkey`   | Valkey used as a message queue |
 
 Once the services are up and running, you can access the following endpoints
 from your local system.
@@ -134,7 +134,7 @@ from your local system.
 | Endpoint                      | Description                 |
 |:------------------------------|:----------------------------|
 | localhost:5432                | PostgreSQL server           |
-| localhost:6379                | Redis server                |
+| localhost:6379                | Valkey server                |
 
 If you want to run any additional upstream Inventory components such as the
 `scheduler` or `dashboard`, please refer to the upstream
