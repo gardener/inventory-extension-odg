@@ -21,3 +21,10 @@ jobs:
         run: |
           set -eu
           make build
+  publish-oci:
+    if: github.event_name == 'push' && github.repository == 'gardener/inventory-extension-odg'
+    uses: ./.github/workflows/oci-images.yaml
+    needs:
+      - test
+    with:
+      mode: snapshot
