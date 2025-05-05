@@ -18,11 +18,11 @@ $(LOCAL_BIN):
 
 .PHONY: goimports-reviser
 goimports-reviser:
-	go tool goimports-reviser -set-exit-status -rm-unused ./...
+	go tool -modfile tools/go.mod goimports-reviser -set-exit-status -rm-unused ./...
 
 .PHONY: lint
 lint:
-	go tool golangci-lint run --config=$(REPO_ROOT)/.golangci.yaml ./...
+	go tool -modfile tools/go.mod golangci-lint run --config=$(REPO_ROOT)/.golangci.yaml ./...
 
 $(BINARY): $(SRC_DIRS) | $(LOCAL_BIN)
 	go build \
@@ -57,3 +57,7 @@ docker-build:
 .PHONY: docker-compose-up
 docker-compose-up:
 	docker compose up --build --remove-orphans
+
+.PHONY: update-tools
+update-tools:
+	go get -u -modfile tools/go.mod tool
