@@ -9,6 +9,14 @@ updates:
     commit-message:
       prefix: "deps: "
 
+  # Create PRs for tool updates
+  - package-ecosystem: gomod
+    directory: /tools
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "tools: "
+
   # Create PRs for golang version updates
   - package-ecosystem: docker
     directory: /
