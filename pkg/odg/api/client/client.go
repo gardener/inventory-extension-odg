@@ -463,7 +463,7 @@ func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) er
 
 // SubmitRuntimeArtefact submits the given [apitypes.ComponentArtefactID] items
 // to the Delivery Service API as runtime artefacts.
-func (c *Client) SubmitRuntimeArtefact(ctx context.Context, items ...apitypes.ComponentArtefactID) error {
+func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]string, items ...apitypes.ComponentArtefactID) error {
 	if len(items) == 0 {
 		return nil
 	}
@@ -486,6 +486,12 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, items ...apitypes.Co
 		return err
 	}
 	c.setReqHeaders(req)
+
+	query := req.URL.Query()
+	for k, v := range labels {
+		query.Add("label", fmt.Sprintf("%s:%s", k, v))
+	}
+	req.URL.RawQuery = query.Encode()
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
