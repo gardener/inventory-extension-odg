@@ -379,6 +379,45 @@ func (c *Client) SubmitArtefactMetadata(ctx context.Context, items ...apitypes.A
 	return nil
 }
 
+// SubmitRuntimeArtefact submits the given [apitypes.ComponentArtefactID] items
+// to the Delivery Service API as runtime artefacts.
+func (c *Client) SubmitRuntimeArtefact(ctx context.Context, items ...apitypes.ComponentArtefactID) error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	u, err := url.JoinPath(c.endpoint.String(), "/service-extensions/runtime-artefacts")
+	if err != nil {
+		return err
+	}
+
+	payload := apitypes.RuntimeArtefactGroup{
+		Artefacts: items,
+	}
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	c.setReqHeaders(req)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return APIErrorFromResponse(resp)
+	}
+
+	return nil
+}
+
 // WithGithubAuthentication configures the [Client] to authenticate against the
 // remote Delivery Service using a Github access token.
 //
