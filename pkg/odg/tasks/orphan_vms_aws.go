@@ -42,7 +42,9 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 
 	now := time.Now()
 	artefacts := make([]apitypes.ArtefactMetadata, 0)
+	runtimeArtefacts := make([]apitypes.ComponentArtefactID, 0)
 	for _, item := range items {
+		// Finding item
 		artefact := apitypes.ArtefactMetadata{
 			Meta: apitypes.Metadata{
 				Datasource:   apitypes.DatasourceInventory,
@@ -75,10 +77,54 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 			},
 			DiscoveryDate: civil.DateOf(now),
 		}
-		artefacts = append(artefacts, artefact)
+
+		// Scan info item for each finding
+		scanInfo := apitypes.ArtefactMetadata{
+			Meta: apitypes.Metadata{
+				Datasource:   apitypes.DatasourceInventory,
+				Type:         apitypes.DatatypeArtefactScanInfo,
+				CreationDate: now,
+				LastUpdate:   now,
+			},
+			Artefact: apitypes.ComponentArtefactID{
+				ComponentName:    payload.ComponentName,
+				ComponentVersion: payload.ComponentVersion,
+				Artefact: apitypes.LocalArtefactID{
+					ArtefactName:    item.InstanceID,
+					ArtefactType:    string(apitypes.ResourceKindVirtualMachineAWS),
+					ArtefactVersion: payload.ComponentVersion,
+					ArtefactExtraID: map[string]string{
+						"vpc_id":      item.VpcID,
+						"region_name": item.RegionName,
+						"account_id":  item.AccountID,
+					},
+				},
+				ArtefactKind: apitypes.ArtefactKindRuntime,
+			},
+			DiscoveryDate: civil.DateOf(now),
+		}
+		artefacts = append(artefacts, artefact, scanInfo)
+
+		// Runtime artefact item for each finding
+		runtimeArtefact := apitypes.ComponentArtefactID{
+			ComponentName:    payload.ComponentName,
+			ComponentVersion: payload.ComponentVersion,
+			Artefact: apitypes.LocalArtefactID{
+				ArtefactName:    item.InstanceID,
+				ArtefactType:    string(apitypes.ResourceKindVirtualMachineAWS),
+				ArtefactVersion: payload.ComponentVersion,
+				ArtefactExtraID: map[string]string{
+					"vpc_id":      item.VpcID,
+					"region_name": item.RegionName,
+					"account_id":  item.AccountID,
+				},
+			},
+			ArtefactKind: apitypes.ArtefactKindRuntime,
+		}
+		runtimeArtefacts = append(runtimeArtefacts, runtimeArtefact)
 	}
 
-	// 2. Wipe out old/previous findings for the artefact type
+	// 2. Wipe out old/previous findings for the artefact type.
 	oldEntries, err := odgclient.Client.QueryArtefactMetadata(
 		ctx,
 		apitypes.DatatypeInventory,
@@ -100,18 +146,45 @@ func HandleReportOrphanVirtualMachinesAWS(ctx context.Context, t *asynq.Task) er
 		return MaybeSkipRetry(err)
 	}
 
-	// 3. Submit orphan resources from step 1.
-	if len(artefacts) == 0 {
-		return nil
+	// ... also wipe out old runtime artefacts
+	labels := map[string]string{
+		"created-by":    string(apitypes.DatasourceInventory),
+		"resource-kind": string(apitypes.ResourceKindVirtualMachineAWS),
+	}
+	oldRuntimeArtefacts, err := odgclient.Client.QueryRuntimeArtefacts(ctx, labels)
+	if err != nil {
+		return MaybeSkipRetry(err)
 	}
 
+	logger.Info("deleting old orphan runtime artefacts from odg", "count", len(oldRuntimeArtefacts))
+	runtimeArtefactNames := make([]string, 0)
+	for _, raItem := range oldRuntimeArtefacts {
+		runtimeArtefactNames = append(runtimeArtefactNames, raItem.Metadata.Name)
+	}
+	if err := odgclient.Client.DeleteRuntimeArtefacts(ctx, runtimeArtefactNames...); err != nil {
+		return MaybeSkipRetry(err)
+	}
+
+	// 3. Submit orphan resources from step 1.
 	logger.Info(
 		"submitting orphan aws instances to odg",
-		"count", len(artefacts),
+		"count", len(items),
 		"component_name", payload.ComponentName,
 		"component_version", payload.ComponentVersion,
 	)
 	if err := odgclient.Client.SubmitArtefactMetadata(ctx, artefacts...); err != nil {
+		return MaybeSkipRetry(err)
+	}
+
+	// 4. Submit runtime artefacts
+	logger.Info(
+		"submitting runtime artefacts",
+		"count", len(runtimeArtefacts),
+		"component_name", payload.ComponentName,
+		"component_version", payload.ComponentVersion,
+	)
+
+	if err := odgclient.Client.SubmitRuntimeArtefact(ctx, labels, runtimeArtefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}
 

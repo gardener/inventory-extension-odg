@@ -19,10 +19,15 @@
 // entries exist in the database, since the Delivery Service does not
 // have a retention mechanism for cleaning up such findings.
 //
+// Also, we need to delete old/previous runtime artefacts for each finding.
+//
 // 3. Submit the orphan resources from step 1
 //
 // The latest orphan resources fetched from step 1 are submitted to the
 // Delivery Service API.
+//
+// 4. Create runtime artefacts, so that findings can be evaluated and compliance
+// issues created or updated for them.
 //
 // If we have no orphan resources to report, then we don't report anything to
 // the remote API.
