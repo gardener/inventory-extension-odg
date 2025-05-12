@@ -379,6 +379,51 @@ func (c *Client) SubmitArtefactMetadata(ctx context.Context, items ...apitypes.A
 	return nil
 }
 
+// QueryRuntimeArtefacts fetches the runtime artefacts with the specified labels
+// from the Delivery Service API.
+func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]string) ([]apitypes.RuntimeArtefactResultItem, error) {
+	u, err := url.JoinPath(c.endpoint.String(), "/service-extensions/runtime-artefacts")
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, err
+	}
+	c.setReqHeaders(req)
+
+	// Filter runtime artefacts by label, if specified.
+	query := req.URL.Query()
+	for k, v := range labels {
+		query.Add("label", fmt.Sprintf("%s:%s", k, v))
+	}
+	req.URL.RawQuery = query.Encode()
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, APIErrorFromResponse(resp)
+	}
+
+	// Parse result runtime artefacts
+	var result []apitypes.RuntimeArtefactResultItem
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // SubmitRuntimeArtefact submits the given [apitypes.ComponentArtefactID] items
 // to the Delivery Service API as runtime artefacts.
 func (c *Client) SubmitRuntimeArtefact(ctx context.Context, items ...apitypes.ComponentArtefactID) error {
