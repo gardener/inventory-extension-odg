@@ -424,6 +424,39 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	return result, nil
 }
 
+// DeleteRuntimeArtefacts deletes the runtime artefacts with the specified names
+// from the Delivery Service API.
+func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) error {
+	u, err := url.JoinPath(c.endpoint.String(), "/service-extensions/runtime-artefacts")
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, nil)
+	if err != nil {
+		return err
+	}
+	c.setReqHeaders(req)
+
+	query := req.URL.Query()
+	for _, name := range names {
+		query.Add("name", name)
+	}
+	req.URL.RawQuery = query.Encode()
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return APIErrorFromResponse(resp)
+	}
+
+	return nil
+}
+
 // SubmitRuntimeArtefact submits the given [apitypes.ComponentArtefactID] items
 // to the Delivery Service API as runtime artefacts.
 func (c *Client) SubmitRuntimeArtefact(ctx context.Context, items ...apitypes.ComponentArtefactID) error {
