@@ -427,6 +427,10 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 // DeleteRuntimeArtefacts deletes the runtime artefacts with the specified names
 // from the Delivery Service API.
 func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) error {
+	if len(names) == 0 {
+		return nil
+	}
+
 	u, err := url.JoinPath(c.endpoint.String(), "/service-extensions/runtime-artefacts")
 	if err != nil {
 		return err
