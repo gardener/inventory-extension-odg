@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"strings"
 
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 )
@@ -396,7 +397,8 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	// Filter runtime artefacts by label, if specified.
 	query := req.URL.Query()
 	for k, v := range labels {
-		query.Add("label", fmt.Sprintf("%s:%s", k, v))
+		normalizedV := strings.ReplaceAll(v, "/", "_")
+		query.Add("label", fmt.Sprintf("%s:%s", k, normalizedV))
 	}
 	req.URL.RawQuery = query.Encode()
 
@@ -489,7 +491,8 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]st
 
 	query := req.URL.Query()
 	for k, v := range labels {
-		query.Add("label", fmt.Sprintf("%s:%s", k, v))
+		normalizedV := strings.ReplaceAll(v, "/", "_")
+		query.Add("label", fmt.Sprintf("%s:%s", k, normalizedV))
 	}
 	req.URL.RawQuery = query.Encode()
 
