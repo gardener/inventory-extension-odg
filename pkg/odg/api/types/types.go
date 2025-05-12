@@ -61,6 +61,10 @@ type Datatype string
 const (
 	// DatatypeInventory represents a finding from the Inventory system
 	DatatypeInventory Datatype = "finding/inventory"
+
+	// DatatypeArtefactScanInfo is a meta artefact, which represents that a
+	// scan from given datasource has been performed.
+	DatatypeArtefactScanInfo = "meta/artefact_scan_info"
 )
 
 // ResourceKind represents the kind of orphan resource, which will be submitted
@@ -177,4 +181,10 @@ type ArtefactMetadataGroup struct {
 type ComponentArtefactIDGroup struct {
 	// Entries contains the group of [ComponentArtefactID] items.
 	Entries []ComponentArtefactID `json:"entries"`
+}
+
+// RuntimeArtefactGroup represents a group of [ComponentArtefactID] items, which
+// are submitted to the Delivery Service API as `runtime-artefacts'.
+type RuntimeArtefactGroup struct {
+	Artefacts []ComponentArtefactID `json:"artefacts"`
 }
