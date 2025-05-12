@@ -188,3 +188,26 @@ type ComponentArtefactIDGroup struct {
 type RuntimeArtefactGroup struct {
 	Artefacts []ComponentArtefactID `json:"artefacts"`
 }
+
+// RuntimeArtefactMetadata represents the metadata for a runtime artefact as
+// retrieved from the remote Delivery Service API.
+type RuntimeArtefactMetadata struct {
+	Name              string            `json:"name,omitempty"`
+	UID               string            `json:"uid,omitempty"`
+	Labels            map[string]string `json:"labels,omitempty"`
+	CreationTimestamp time.Time         `json:"creationTimestamp"`
+}
+
+// RuntimeArtefactSpec represents the spec for a runtime artefact as retrieved
+// from the remote Delivery Service API.
+type RuntimeArtefactSpec struct {
+	CreationData time.Time           `json:"creation_date"`
+	Artefact     ComponentArtefactID `json:"artefact"`
+}
+
+// RuntimeArtefactResultItem represents a runtime artefact retrieved from the
+// remote Delivery Service API.
+type RuntimeArtefactResultItem struct {
+	Metadata RuntimeArtefactMetadata `json:"metadata"`
+	Spec     RuntimeArtefactSpec     `json:"spec"`
+}
