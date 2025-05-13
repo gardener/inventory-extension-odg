@@ -408,7 +408,7 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusOK {
 		return nil, APIErrorFromResponse(resp)
 	}
 
