@@ -146,8 +146,9 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 
 	// ... also wipe out old runtime artefacts
 	labels := map[string]string{
-		"created-by":    string(apitypes.DatasourceInventory),
-		"resource-kind": string(apitypes.ResourceKindIPAddressGCP),
+		"created-by":     string(apitypes.DatasourceInventory),
+		"resource-kind":  string(apitypes.ResourceKindIPAddressGCP),
+		"component-name": payload.ComponentName,
 	}
 	oldRuntimeArtefacts, err := odgclient.Client.QueryRuntimeArtefacts(ctx, labels)
 	if err != nil {

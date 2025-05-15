@@ -145,8 +145,9 @@ func HandleReportOrphanVirtualMachinesGCP(ctx context.Context, t *asynq.Task) er
 
 	// ... also wipe out old runtime artefacts
 	labels := map[string]string{
-		"created-by":    string(apitypes.DatasourceInventory),
-		"resource-kind": string(apitypes.ResourceKindVirtualMachineGCP),
+		"created-by":     string(apitypes.DatasourceInventory),
+		"resource-kind":  string(apitypes.ResourceKindVirtualMachineGCP),
+		"component-name": payload.ComponentName,
 	}
 	oldRuntimeArtefacts, err := odgclient.Client.QueryRuntimeArtefacts(ctx, labels)
 	if err != nil {
