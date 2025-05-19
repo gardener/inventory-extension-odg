@@ -3,12 +3,10 @@ module github.com/gardener/inventory-extension-odg
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.121.0
+	cloud.google.com/go v0.121.1
 	github.com/gardener/inventory v0.1.12
 	github.com/hibiken/asynq v0.25.1
 	github.com/uptrace/bun v1.2.11
-	github.com/uptrace/bun/dialect/pgdialect v1.2.11
-	github.com/uptrace/bun/driver/pgdriver v1.2.11
 	github.com/uptrace/bun/extra/bundebug v1.2.11
 	github.com/urfave/cli/v2 v2.27.6
 )
@@ -29,6 +27,8 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/cast v1.8.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/uptrace/bun/dialect/pgdialect v1.2.11 // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.2.11 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
