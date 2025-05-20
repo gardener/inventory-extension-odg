@@ -26,7 +26,7 @@ jobs:
   release-and-bump:
     uses: gardener/cc-utils/.github/workflows/release.yaml@master
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
       pull-requests: write
