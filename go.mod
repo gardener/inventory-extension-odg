@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.121.2
 	github.com/gardener/inventory v0.1.13
 	github.com/hibiken/asynq v0.25.1
-	github.com/uptrace/bun v1.2.11
+	github.com/uptrace/bun v1.2.14
 	github.com/uptrace/bun/extra/bundebug v1.2.11
 	github.com/urfave/cli/v2 v2.27.6
 )
