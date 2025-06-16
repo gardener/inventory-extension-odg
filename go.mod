@@ -8,7 +8,7 @@ require (
 	github.com/hibiken/asynq v0.25.1
 	github.com/uptrace/bun v1.2.11
 	github.com/uptrace/bun/extra/bundebug v1.2.11
-	github.com/urfave/cli/v2 v2.27.6
+	github.com/urfave/cli/v2 v2.27.7
 )
 
 require (

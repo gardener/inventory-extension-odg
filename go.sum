@@ -63,8 +63,8 @@ github.com/uptrace/bun/driver/pgdriver v1.2.11 h1:nqU0ORMh8cESUqGZNGPAMdFF6YrU2R
 github.com/uptrace/bun/driver/pgdriver v1.2.11/go.mod h1:suBR8qaazdzlPAjVIlmC93yGCUzP6Au71WVgySfv6Qw=
 github.com/uptrace/bun/extra/bundebug v1.2.11 h1:RyJmjITEXLRvFJwjD+u2U2eZijJhL7eIdzvW7FQSUgg=
 github.com/uptrace/bun/extra/bundebug v1.2.11/go.mod h1:K/cBN9HSW/hC17R1zVKcLOPi5PKG2PY1j7powaoCBFU=
-github.com/urfave/cli/v2 v2.27.6 h1:VdRdS98FNhKZ8/Az8B7MTyGQmpIr36O1EHybx/LaZ4g=
-github.com/urfave/cli/v2 v2.27.6/go.mod h1:3Sevf16NykTbInEnD0yKkjDAeZDS0A6bzhBH5hrMvTQ=
+github.com/urfave/cli/v2 v2.27.7 h1:bH59vdhbjLv3LAvIu6gd0usJHgoTTPhCFib8qqOwXYU=
+github.com/urfave/cli/v2 v2.27.7/go.mod h1:CyNAG/xg+iAOg0N4MPGZqVmv2rCoP267496AOXUZjA4=
 github.com/vmihailenco/msgpack/v5 v5.4.1 h1:cQriyiUvjTwOHg8QZaPihLWeRAAVoCpE00IUPn0Bjt8=
 github.com/vmihailenco/msgpack/v5 v5.4.1/go.mod h1:GaZTsDaehaPpQVyxrf5mtQlH+pc21PIudVV/E3rRQok=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
