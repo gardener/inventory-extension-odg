@@ -35,10 +35,11 @@ func NewTasksCommand() *cli.Command {
 }
 
 // execTaskListCommand lists the tasks from the default registry
-func execTaskListCommand(ctx *cli.Context) error {
+func execTaskListCommand(_ *cli.Context) error {
 	tasks := make([]string, 0)
 	_ = registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
 		tasks = append(tasks, name)
+
 		return nil
 	})
 

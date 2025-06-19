@@ -166,7 +166,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 		return err
 	}
 	dbclient.SetDB(db)
-	defer db.Close()
+	defer db.Close() // nolint: errcheck
 
 	// Configure the Open Delivery Gear API client
 	slog.Info(
@@ -194,6 +194,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	worker.HandlersFromRegistry(registry.TaskRegistry)
 	_ = registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
 		slog.Info("registered task", "name", name)
+
 		return nil
 	})
 	slog.Info("worker concurrency", "level", conf.Worker.Concurrency)
@@ -232,7 +233,7 @@ func execWorkerPingCommand(ctx *cli.Context) error {
 
 	redisClientOpt := asynqutils.NewRedisClientOptFromConfig(conf.Redis)
 	inspector := asynq.NewInspector(redisClientOpt)
-	defer inspector.Close()
+	defer inspector.Close() // nolint: errcheck
 
 	servers, err := inspector.Servers()
 	if err != nil {

@@ -36,6 +36,7 @@ const (
 // [ArtefactKind class]: https://github.com/gardener/cc-utils/blob/af54ca4f80b6b96dbb981d7c9ea080239f552a49/dso/model.py#L183-L187
 type ArtefactKind string
 
+// The various artefact kinds supported by the upstream ODG API service.
 const (
 	ArtefactKindArtefact ArtefactKind = "artefact"
 	ArtefactKindResource ArtefactKind = "resource"
@@ -171,7 +172,7 @@ type ArtefactMetadata struct {
 	DiscoveryDate civil.Date          `json:"discovery_date"`
 }
 
-// ArtefactMetadaGroup represents a group of [ArtefactMetadata] items.
+// ArtefactMetadataGroup represents a group of [ArtefactMetadata] items.
 type ArtefactMetadataGroup struct {
 	// Entries contains the group of [ArtefactMetadata] items.
 	Entries []ArtefactMetadata `json:"entries"`
