@@ -73,7 +73,6 @@ func APIErrorFromResponse(resp *http.Response) error {
 	resp.Body = io.NopCloser(bytes.NewReader(body))
 
 	return apiErr
-
 }
 
 // Error implements the error interface
@@ -189,7 +188,7 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK {
 		return APIErrorFromResponse(resp)
@@ -200,6 +199,7 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	for _, cookie := range resp.Cookies() {
 		if cookie.Name == AuthCookie {
 			gotAuthCookie = true
+
 			break
 		}
 	}
@@ -230,7 +230,7 @@ func (c *Client) Logout(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK {
 		return APIErrorFromResponse(resp)
@@ -278,7 +278,7 @@ func (c *Client) QueryArtefactMetadata(
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, APIErrorFromResponse(resp)
@@ -329,7 +329,7 @@ func (c *Client) DeleteArtefactMetadata(ctx context.Context, items ...apitypes.A
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusNoContent {
 		return APIErrorFromResponse(resp)
@@ -371,7 +371,7 @@ func (c *Client) SubmitArtefactMetadata(ctx context.Context, items ...apitypes.A
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return APIErrorFromResponse(resp)
@@ -406,7 +406,7 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, APIErrorFromResponse(resp)
@@ -454,7 +454,7 @@ func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) er
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return APIErrorFromResponse(resp)
@@ -500,7 +500,7 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]st
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return APIErrorFromResponse(resp)

@@ -110,7 +110,6 @@ func Parse(paths ...string) (*Config, error) {
 		if conf.Version != ConfigFormatVersion {
 			return nil, fmt.Errorf("%w: %s (%s)", coreconfig.ErrUnsupportedVersion, conf.Version, path)
 		}
-
 	}
 
 	return &conf, nil

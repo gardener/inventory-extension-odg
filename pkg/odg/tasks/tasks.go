@@ -109,13 +109,13 @@ func FetchResourcesFromDB(ctx context.Context, db *bun.DB, query string, dest an
 func MaybeSkipRetry(err error) error {
 	// Skip retry for the following HTTP status codes returned by the remote
 	// Delivery Service API.
-	skipHttpCodes := []int{
+	skipHTTPCodes := []int{
 		http.StatusInternalServerError,
 	}
 
 	var apiErr *apiclient.APIError
 	if errors.As(err, &apiErr) {
-		if slices.Contains(skipHttpCodes, apiErr.StatusCode) {
+		if slices.Contains(skipHTTPCodes, apiErr.StatusCode) {
 			return fmt.Errorf("%w (%w)", err, asynq.SkipRetry)
 		}
 	}
