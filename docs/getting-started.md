@@ -131,10 +131,11 @@ The services which will be started are summarized in the table below.
 Once the services are up and running, you can access the following endpoints
 from your local system.
 
-| Endpoint                      | Description                 |
-|:------------------------------|:----------------------------|
-| localhost:5432                | PostgreSQL server           |
-| localhost:6379                | Valkey server                |
+| Endpoint               | Description                           |
+|:-----------------------|:--------------------------------------|
+| localhost:5432         | PostgreSQL server                     |
+| localhost:6379         | Valkey server                         |
+| localhost:6080/metrics | Metrics endpoint for Extension Worker |
 
 If you want to run any additional upstream Inventory components such as the
 `scheduler` or `dashboard`, please refer to the upstream
