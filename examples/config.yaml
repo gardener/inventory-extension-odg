@@ -26,6 +26,11 @@ database:
 
 # Worker settings
 worker:
+  # Metrics settings
+  metrics:
+    path: /metrics
+    address: ":6080"
+
   # Concurrency level
   concurrency: 100
 
