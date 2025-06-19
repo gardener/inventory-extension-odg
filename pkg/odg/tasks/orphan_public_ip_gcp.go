@@ -14,10 +14,12 @@ import (
 	"github.com/gardener/inventory/pkg/core/registry"
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
+	"github.com/prometheus/client_golang/prometheus"
 
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 	odgclient "github.com/gardener/inventory-extension-odg/pkg/odg/client"
 	"github.com/gardener/inventory-extension-odg/pkg/odg/models"
+	"github.com/gardener/inventory/pkg/metrics"
 )
 
 // TaskReportOrphanPublicAddressGCP is the name of the task, which
@@ -40,6 +42,18 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 
 	logger := asynqutils.GetLogger(ctx)
 	logger.Info("found orphan gcp public addresses", "count", len(items))
+
+	// Metric about discovered orphan resources from Inventory
+	metrics.DefaultCollector.AddMetric(
+		metrics.Key(TaskReportOrphanPublicAddressGCP, "discovered_resources"),
+		prometheus.MustNewConstMetric(
+			discoveredOrphanResourcesDesc,
+			prometheus.GaugeValue,
+			float64(len(items)),
+			string(apitypes.ProviderNameGCP),
+			string(apitypes.ResourceKindIPAddressGCP),
+		),
+	)
 
 	now := time.Now()
 	artefacts := make([]apitypes.ArtefactMetadata, 0)
@@ -186,6 +200,18 @@ func HandleReportOrphanPublicAddressGCP(ctx context.Context, t *asynq.Task) erro
 	if err := odgclient.Client.SubmitRuntimeArtefact(ctx, labels, runtimeArtefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}
+
+	// Metric about successfully reported orphan resources to ODG.
+	metrics.DefaultCollector.AddMetric(
+		metrics.Key(TaskReportOrphanPublicAddressGCP, "reported_resources"),
+		prometheus.MustNewConstMetric(
+			reportedOrphanResourcesDesc,
+			prometheus.GaugeValue,
+			float64(len(items)),
+			string(apitypes.ProviderNameGCP),
+			string(apitypes.ResourceKindIPAddressGCP),
+		),
+	)
 
 	return nil
 }
