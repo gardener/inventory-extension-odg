@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -83,7 +84,7 @@ func newDB(conf *config.Config) (*bun.DB, error) {
 }
 
 // newWorker creates a new [workerutils.Worker] from the given config.
-func newWorker(conf *config.Config) *workerutils.Worker {
+func newWorker(ctx context.Context, conf *config.Config) *workerutils.Worker {
 	redisClientOpt := asynqutils.NewRedisClientOptFromConfig(conf.Redis)
 
 	opts := make([]workerutils.Option, 0)
@@ -94,12 +95,13 @@ func newWorker(conf *config.Config) *workerutils.Worker {
 
 	opts = append(opts, workerutils.WithLogLevel(logLevel))
 	opts = append(opts, workerutils.WithErrorHandler(asynqutils.NewDefaultErrorHandler()))
-	worker := workerutils.NewFromConfig(redisClientOpt, conf.Worker, opts...)
+	worker := workerutils.NewFromConfig(ctx, redisClientOpt, conf.Worker, opts...)
 
 	// Configure middlewares
 	middlewares := []asynq.MiddlewareFunc{
 		asynqutils.NewLoggerMiddleware(slog.Default()),
 		asynqutils.NewMeasuringMiddleware(),
+		asynqutils.NewMetricsMiddleware(),
 	}
 	worker.UseMiddlewares(middlewares...)
 
@@ -190,7 +192,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	odgclient.SetClient(odgClient)
 
 	// Create a worker, register handlers and start it up
-	worker := newWorker(conf)
+	worker := newWorker(ctx.Context, conf)
 	worker.HandlersFromRegistry(registry.TaskRegistry)
 	_ = registry.TaskRegistry.Range(func(name string, _ asynq.Handler) error {
 		slog.Info("registered task", "name", name)
