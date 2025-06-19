@@ -148,6 +148,22 @@ Additionally, you can extend the existing
 manifest with the [gardener/inventory-extension-odg docker-compose.yaml](../docker-compose.yaml)
 in order to run a complete Inventory cluster with the Open Delivery Gear extension in it.
 
+# Metrics
+
+The extension worker exposes the following metrics via it's metrics endpoint:
+
+| Metric                                      | Type    | Description                                             |
+|:--------------------------------------------|:--------|:--------------------------------------------------------|
+| `inventory_odg_discovered_orphan_resources` | `gauge` | Number of discovered orphan resources from Inventory    |
+| `inventory_odg_reported_orphan_resources`   | `gauge` | Number of successfully reported orphan resources to ODG |
+
+`inventory-extension-odg` also exposes additional metrics provided by the
+upstream [gardener/inventory](https://github.com/gardener/inventory), which
+track successful/failed tasks, task execution duration, etc.
+
+For more details about these metrics, please refer to the `gardener/inventory`
+documentation.
+
 # Extension Worker Tasks
 
 The `inventory-extension-odg` extension provides the following tasks.
