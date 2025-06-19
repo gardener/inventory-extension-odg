@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/civil"
 	dbclient "github.com/gardener/inventory/pkg/clients/db"
 	"github.com/gardener/inventory/pkg/core/registry"
+	"github.com/gardener/inventory/pkg/metrics"
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,7 +19,6 @@ import (
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 	odgclient "github.com/gardener/inventory-extension-odg/pkg/odg/client"
 	"github.com/gardener/inventory-extension-odg/pkg/odg/models"
-	"github.com/gardener/inventory/pkg/metrics"
 )
 
 // TaskReportOrphanVirtualMachinesAWS is the name of the task, which

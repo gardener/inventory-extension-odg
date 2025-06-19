@@ -5,9 +5,8 @@
 package tasks
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-
 	"github.com/gardener/inventory/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (

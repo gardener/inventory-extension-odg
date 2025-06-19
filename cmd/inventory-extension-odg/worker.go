@@ -206,6 +206,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 	}
 
 	defer worker.Shutdown()
+
 	return worker.Run()
 }
 
