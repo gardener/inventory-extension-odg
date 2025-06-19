@@ -13,10 +13,12 @@ import (
 	"github.com/gardener/inventory/pkg/core/registry"
 	asynqutils "github.com/gardener/inventory/pkg/utils/asynq"
 	"github.com/hibiken/asynq"
+	"github.com/prometheus/client_golang/prometheus"
 
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 	odgclient "github.com/gardener/inventory-extension-odg/pkg/odg/client"
 	"github.com/gardener/inventory-extension-odg/pkg/odg/models"
+	"github.com/gardener/inventory/pkg/metrics"
 )
 
 // TaskReportOrphanVirtualMachinesAzure is the name of the task, which
@@ -39,6 +41,18 @@ func HandleReportOrphanVirtualMachinesAzure(ctx context.Context, t *asynq.Task) 
 
 	logger := asynqutils.GetLogger(ctx)
 	logger.Info("found orphan azure instances", "count", len(items))
+
+	// Metric about discovered orphan resources from Inventory
+	metrics.DefaultCollector.AddMetric(
+		metrics.Key(TaskReportOrphanVirtualMachinesAzure, "discovered_resources"),
+		prometheus.MustNewConstMetric(
+			discoveredOrphanResourcesDesc,
+			prometheus.GaugeValue,
+			float64(len(items)),
+			string(apitypes.ProviderNameAzure),
+			string(apitypes.ResourceKindVirtualMachineAzure),
+		),
+	)
 
 	now := time.Now()
 	artefacts := make([]apitypes.ArtefactMetadata, 0)
@@ -188,6 +202,18 @@ func HandleReportOrphanVirtualMachinesAzure(ctx context.Context, t *asynq.Task) 
 	if err := odgclient.Client.SubmitRuntimeArtefact(ctx, labels, runtimeArtefacts...); err != nil {
 		return MaybeSkipRetry(err)
 	}
+
+	// Metric about successfully reported orphan resources to ODG.
+	metrics.DefaultCollector.AddMetric(
+		metrics.Key(TaskReportOrphanVirtualMachinesAzure, "reported_resources"),
+		prometheus.MustNewConstMetric(
+			reportedOrphanResourcesDesc,
+			prometheus.GaugeValue,
+			float64(len(items)),
+			string(apitypes.ProviderNameAzure),
+			string(apitypes.ResourceKindVirtualMachineAzure),
+		),
+	)
 
 	return nil
 }
