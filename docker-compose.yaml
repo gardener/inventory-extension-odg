@@ -32,6 +32,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - 6080:6080
     entrypoint: ["/app/inventory-extension-odg", "worker", "start"]
     hostname: inventory-extension-odg-1
     healthcheck:
