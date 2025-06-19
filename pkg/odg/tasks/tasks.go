@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// Package tasks provides tasks for submitting orphan resources discovered by Inventory as
-// findings to the Open Delivery Gear API.
+// Package tasks provides tasks for submitting orphan resources discovered by
+// Inventory as findings to the Open Delivery Gear API.
 //
 // The flow for submitting findings to the Delivery Service API is as follows.
 //
