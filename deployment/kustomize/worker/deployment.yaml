@@ -22,6 +22,11 @@ spec:
     metadata:
       labels:
         app: extension-odg
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/scheme: "http"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "6080"
     spec:
       containers:
       - name: worker
