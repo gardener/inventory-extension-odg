@@ -203,6 +203,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 		slog.Info("queue configuration", "name", queue, "priority", priority)
 	}
 
+	defer worker.Shutdown()
 	return worker.Run()
 }
 
