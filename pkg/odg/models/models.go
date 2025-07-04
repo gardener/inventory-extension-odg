@@ -64,6 +64,23 @@ type OrphanVirtualMachineAzure struct {
 	HyperVGeneration           string    `bun:"hyper_v_gen" json:"hyper_v_gen"`
 }
 
+// OrphanVirtualMachineOpenStack represents an OpenStack server, which has been identified
+// as being orphan.
+type OrphanVirtualMachineOpenStack struct {
+	ServerID         string `bun:"server_id" json:"server_id"`
+	Name             string `bun:"name" json:"name"`
+	ProjectID        string `bun:"project_id" json:"project_id"`
+	ProjectName      string `bun:"project_name" json:"project_name"`
+	Domain           string `bun:"domain" json:"domain"`
+	Region           string `bun:"region" json:"region"`
+	UserID           string `bun:"user_id" json:"user_id"`
+	AvailabilityZone string `bun:"availability_zone" json:"availability_zone"`
+	Status           string `bun:"status" json:"status"`
+	ImageID          string `bun:"image_id" json:"image_id"`
+	ServerCreatedAt  string `bun:"server_created_at" json:"server_created_at"`
+	ServerUpdatedAt  string `bun:"server_updated_at" json:"server_updated_at"`
+}
+
 // OrphanPublicAddressGCP represents a GCP public IP address, which has been
 // identified as being orphan.
 type OrphanPublicAddressGCP struct {

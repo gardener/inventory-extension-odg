@@ -85,6 +85,10 @@ const (
 	// resource.
 	ResourceKindVirtualMachineAzure ResourceKind = "az/virtual-machine"
 
+	// ResourceKindVirtualMachineOpenStack represents a OpenStack Virtual Machine
+	// resource.
+	ResourceKindVirtualMachineOpenStack ResourceKind = "openstack/virtual-machine"
+
 	// ResourceKindIPAddressGCP represents a GCP Public IP address resource.
 	ResourceKindIPAddressGCP ResourceKind = "gcp/public-ip-address"
 )
@@ -102,6 +106,9 @@ const (
 
 	// ProviderNameAzure represents Azure as the origin of orphan resources.
 	ProviderNameAzure ProviderName = "azure"
+
+	// ProviderNameOpenStack represents OpenStack as the origin of orphan resources.
+	ProviderNameOpenStack ProviderName = "openstack"
 )
 
 // Finding is a representation of the [InventoryFinding class]
