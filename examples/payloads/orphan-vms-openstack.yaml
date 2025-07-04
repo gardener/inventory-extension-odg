@@ -1,0 +1,21 @@
+---
+# Example payload for fetching and reporting orphan OpenStack Servers
+component_name: my-ocm-component
+component_version: v0.1.0
+query: |
+  SELECT
+    s.server_id,
+    s.name,
+    s.project_id,
+    s.project_name,
+    s.domain,
+    s.region,
+    s.user_id,
+    s.availability_zone,
+    s.status,
+    s.image_id,
+    s.server_created_at,
+    s.server_updated_at
+  FROM openstack_orphan_server AS s
+  WHERE
+    housekeeper_ran_in_last('1 hour', 'openstack:model:server')
