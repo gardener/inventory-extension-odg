@@ -84,6 +84,32 @@ scheduler:
           WHERE
             housekeeper_ran_in_last('1 hour', 'az:model:vm')
 
+    #OpenStack orphan server
+    - name: "odg:task:report-orphan-vms-openstack"
+      spec: "@every 168h"
+      desc: "Report orphan OpenStack Servers"
+      queue: odg
+      payload: |
+        component_name: inventory
+        component_version: v0.1.0
+        query: |
+          SELECT
+            s.server_id,
+            s.name,
+            s.project_id,
+            s.project_name,
+            s.domain,
+            s.region,
+            s.user_id,
+            s.availability_zone,
+            s.status,
+            s.image_id,
+            s.server_created_at,
+            s.server_updated_at
+          FROM openstack_orphan_server AS s
+          WHERE
+            housekeeper_ran_in_last('1 hour', 'openstack:model:server')
+
     # GCP orphan Public IP Address
     - name: "odg:task:report-orphan-ip-addresses-gcp"
       spec: "@every 168h"
