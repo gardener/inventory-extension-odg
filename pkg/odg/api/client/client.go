@@ -16,6 +16,8 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
+	"sync"
+	"time"
 
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 )
@@ -88,6 +90,8 @@ type Option func(c *Client) error
 // Client is an API client for interfacing with the Open Delivery Gear API
 // service.
 type Client struct {
+	mu sync.Mutex
+
 	// endpoint specifies the remote Delivery Service base API endpoint
 	endpoint *url.URL
 
@@ -107,6 +111,11 @@ type Client struct {
 	// Github API. The information will then be used to create a JWT token,
 	// signed with the Delivery Service private keys.
 	authGithubToken string
+
+	// tokenExpiresAt specifies the time when the token is considered
+	// expired. It is present only when using an authentication method,
+	// which returns an auth cookie.
+	tokenExpiresAt time.Time
 }
 
 // New creates a new [Client] against the provided endpoint and configures it
@@ -155,6 +164,28 @@ func (c *Client) setReqHeaders(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
 }
 
+// doRequest performs the HTTP API call from the provided request.
+func (c *Client) doRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
+	// When using authentication tokenExpiresAt will be set to a non-zero
+	// value. If we are approaching the token expiration we need to
+	// re-authenticate.
+	if !c.tokenExpiresAt.IsZero() {
+		c.mu.Lock()
+		defer c.mu.Unlock()
+
+		now := time.Now()
+		if now.After(c.tokenExpiresAt.Add(time.Duration(-1) * time.Minute)) {
+			if err := c.Authenticate(ctx); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	c.setReqHeaders(req)
+
+	return c.httpClient.Do(req)
+}
+
 // Authenticate authenticates the API client against the remote Delivery Service
 // API.
 //
@@ -178,12 +209,14 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 	query := req.URL.Query()
 	query.Add("api_url", c.authGithubURL.String())
 	query.Add("access_token", c.authGithubToken)
 	req.URL.RawQuery = query.Encode()
 
+	// `Authenticate' method does not use `doRequest', because `doRequest' may
+	// acquire a lock in order to re-authenticate and get a new token.
+	c.setReqHeaders(req)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
@@ -198,6 +231,7 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	gotAuthCookie := false
 	for _, cookie := range resp.Cookies() {
 		if cookie.Name == AuthCookie {
+			c.tokenExpiresAt = time.Now().Add(time.Duration(cookie.MaxAge) * time.Second)
 			gotAuthCookie = true
 
 			break
@@ -224,9 +258,8 @@ func (c *Client) Logout(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -269,12 +302,12 @@ func (c *Client) QueryArtefactMetadata(
 	if err != nil {
 		return nil, err
 	}
-	c.setReqHeaders(req)
+
 	query := req.URL.Query()
 	query.Add("type", string(datatype))
 	req.URL.RawQuery = query.Encode()
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -323,9 +356,8 @@ func (c *Client) DeleteArtefactMetadata(ctx context.Context, items ...apitypes.A
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -365,9 +397,8 @@ func (c *Client) SubmitArtefactMetadata(ctx context.Context, items ...apitypes.A
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -392,7 +423,6 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	if err != nil {
 		return nil, err
 	}
-	c.setReqHeaders(req)
 
 	// Filter runtime artefacts by label, if specified.
 	query := req.URL.Query()
@@ -402,7 +432,7 @@ func (c *Client) QueryRuntimeArtefacts(ctx context.Context, labels map[string]st
 	}
 	req.URL.RawQuery = query.Encode()
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -442,7 +472,6 @@ func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) er
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 
 	query := req.URL.Query()
 	for _, name := range names {
@@ -450,7 +479,7 @@ func (c *Client) DeleteRuntimeArtefacts(ctx context.Context, names ...string) er
 	}
 	req.URL.RawQuery = query.Encode()
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -487,7 +516,6 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]st
 	if err != nil {
 		return err
 	}
-	c.setReqHeaders(req)
 
 	query := req.URL.Query()
 	for k, v := range labels {
@@ -496,7 +524,7 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]st
 	}
 	req.URL.RawQuery = query.Encode()
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequest(ctx, req)
 	if err != nil {
 		return err
 	}
