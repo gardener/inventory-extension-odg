@@ -172,6 +172,7 @@ The `inventory-extension-odg` extension provides the following tasks.
 - `odg:task:report-orphan-vms-gcp` - reports orphan GCP Compute Engine instances as findings
 - `odg:task:report-orphan-vms-az` - reports orphan Azure Virtual Machines as findings
 - `odg:task:report-orphan-ip-addresses-gcp` - reports orphan GCP Public IP Addresses as findings
+- `odg:task:report-orphan-vms-openstack` - reports orphan OpenStack Servers as findings
 
 Each of these tasks expects a payload, which represents the query to be used
 when fetching orphan resources from the database.
