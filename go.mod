@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.121.3
 	github.com/gardener/inventory v0.1.15
 	github.com/hibiken/asynq v0.25.1
-	github.com/prometheus/client_golang v1.22.0
+	github.com/prometheus/client_golang v1.23.0
 	github.com/uptrace/bun v1.2.14
 	github.com/uptrace/bun/extra/bundebug v1.2.14
 	github.com/urfave/cli/v2 v2.27.7
@@ -24,7 +24,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.64.0 // indirect
+	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/redis/go-redis/v9 v9.10.0 // indirect
