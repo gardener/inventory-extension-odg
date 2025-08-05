@@ -7,8 +7,8 @@ require (
 	github.com/gardener/inventory v0.1.15
 	github.com/hibiken/asynq v0.25.1
 	github.com/prometheus/client_golang v1.23.0
-	github.com/uptrace/bun v1.2.14
-	github.com/uptrace/bun/extra/bundebug v1.2.14
+	github.com/uptrace/bun v1.2.15
+	github.com/uptrace/bun/extra/bundebug v1.2.15
 	github.com/urfave/cli/v2 v2.27.7
 )
 
@@ -41,7 +41,7 @@ require (
 	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	golang.org/x/crypto v0.39.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
