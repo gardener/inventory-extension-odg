@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	cloud.google.com/go v0.121.4
-	github.com/gardener/inventory v0.1.17
+	github.com/gardener/inventory v0.1.18
 	github.com/hibiken/asynq v0.25.1
 	github.com/prometheus/client_golang v1.23.0
 	github.com/uptrace/bun v1.2.15
