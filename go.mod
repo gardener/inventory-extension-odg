@@ -3,7 +3,7 @@ module github.com/gardener/inventory-extension-odg
 go 1.24.0
 
 require (
-	cloud.google.com/go v0.121.6
+	cloud.google.com/go v0.123.0
 	github.com/gardener/inventory v0.1.18
 	github.com/hibiken/asynq v0.25.1
 	github.com/prometheus/client_golang v1.23.0
@@ -41,8 +41,8 @@ require (
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	google.golang.org/protobuf v1.36.7 // indirect
 	mellium.im/sasl v0.3.2 // indirect
