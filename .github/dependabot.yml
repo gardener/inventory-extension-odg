@@ -8,6 +8,8 @@ updates:
       interval: weekly
     commit-message:
       prefix: "deps: "
+    labels:
+    - kind/enhancement
 
   # Create PRs for tool updates
   - package-ecosystem: gomod
@@ -16,6 +18,8 @@ updates:
       interval: weekly
     commit-message:
       prefix: "tools: "
+    labels:
+    - kind/enhancement
 
   # Create PRs for golang version updates
   - package-ecosystem: docker
@@ -24,3 +28,5 @@ updates:
       interval: weekly
     commit-message:
       prefix: "docker: "
+    labels:
+    - kind/enhancement
