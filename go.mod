@@ -7,7 +7,7 @@ require (
 	github.com/gardener/inventory v0.1.26
 	github.com/hibiken/asynq v0.26.0
 	github.com/prometheus/client_golang v1.24.0
-	github.com/uptrace/bun v1.2.18
+	github.com/uptrace/bun v1.3.0
 	github.com/uptrace/bun/extra/bundebug v1.2.18
 	github.com/urfave/cli/v2 v2.27.7
 )
