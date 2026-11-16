@@ -116,7 +116,7 @@ func newOdgClient(conf *config.Config) (*odgapi.Client, error) {
 	}
 
 	if conf.ODG.Endpoint == "" {
-		return nil, errors.New("odg: no api endpoint specified")
+		return nil, fmt.Errorf("odg: %w", odgapi.ErrNoDeliveryServiceEndpoint)
 	}
 
 	if conf.ODG.Auth.Method == "" {
@@ -126,14 +126,22 @@ func newOdgClient(conf *config.Config) (*odgapi.Client, error) {
 	switch conf.ODG.Auth.Method {
 	case config.ODGAuthMethodGithub:
 		if conf.ODG.Auth.Github.URL == "" {
-			return nil, errors.New("odg: no github api url specified")
+			return nil, fmt.Errorf("odg: %w", odgapi.ErrNoGithubAPIURL)
 		}
-		if conf.ODG.Auth.Github.Token == "" {
-			return nil, errors.New("odg: no github access token specified")
+		if conf.ODG.Auth.Github.ClientID == "" {
+			return nil, fmt.Errorf("odg: %w", odgapi.ErrNoGithubClientID)
 		}
+		if conf.ODG.Auth.Github.PrivateKeyPath == "" {
+			return nil, fmt.Errorf("odg: %w", odgapi.ErrNoGithubPrivateKey)
+		}
+
 		opts = append(
 			opts,
-			odgapi.WithGithubAuthentication(conf.ODG.Auth.Github.URL, conf.ODG.Auth.Github.Token),
+			odgapi.WithGithubAuthentication(
+				conf.ODG.Auth.Github.URL,
+				conf.ODG.Auth.Github.ClientID,
+				conf.ODG.Auth.Github.PrivateKeyPath,
+			),
 		)
 	case config.ODGAuthMethodNone:
 		// No authentication, nothing to do here.
@@ -185,9 +193,7 @@ func execWorkerStartCommand(ctx *cli.Context) error {
 		if err := odgClient.Authenticate(ctx.Context); err != nil {
 			return err
 		}
-		defer func() {
-			_ = odgClient.Logout(ctx.Context)
-		}()
+		defer odgClient.Logout(ctx.Context)
 	}
 	odgclient.SetClient(odgClient)
 

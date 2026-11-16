@@ -8,6 +8,7 @@ package client
 import (
 	"bytes"
 	"context"
+	"crypto/rsa"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,9 +16,13 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 
 	apitypes "github.com/gardener/inventory-extension-odg/pkg/odg/api/types"
 )
@@ -33,13 +38,23 @@ const AuthCookie = "bearer_token"
 // not return an authentication cookie upon successful authentication.
 var ErrNoAuthCookie = errors.New("no authentication cookie returned")
 
+// ErrNoDeliveryServiceEndpoint is an error, which is returned when creating a
+// new [Client] with an empty Delivery Service API endpoint.
+var ErrNoDeliveryServiceEndpoint = errors.New("no delivery service endpoint configured")
+
 // ErrNoGithubAPIURL is an error, which is returned when the [Client] is
 // attempting to authenticate, but no Github API URL has been configured.
 var ErrNoGithubAPIURL = errors.New("no github api url configured")
 
-// ErrNoGithubToken is an error, which is returned when the [Client] is
-// attempting to authenticate, but no Github token has been configured.
-var ErrNoGithubToken = errors.New("no github token configured")
+// ErrNoGithubClientID is an error, which is returned when the [Client] is
+// attempting to authenticate with Github, but no Github App Client ID has been
+// configured.
+var ErrNoGithubClientID = errors.New("no github app client id configured")
+
+// ErrNoGithubPrivateKey is an error, which is returned when the [Client] is
+// attempting to authenticate with Github, but no Github App private key path
+// has been configured.
+var ErrNoGithubPrivateKey = errors.New("no github app private key configured")
 
 // APIError represents an error returned by the remote Delivery Service
 // API.
@@ -102,15 +117,7 @@ type Client struct {
 	// calls.
 	userAgent string
 
-	// authGithubURL specifies a Github API URL, which the Delivery Service
-	// will query for user's information, before signing a JWT token for us.
-	authGithubURL *url.URL
-
-	// authGithubToken specifies a Github Personal Access Token (PAT), which
-	// the Delivery Service will use to query user's information via the
-	// Github API. The information will then be used to create a JWT token,
-	// signed with the Delivery Service private keys.
-	authGithubToken string
+	githubAuth *githubAuthConfig
 
 	// tokenExpiresAt specifies the time when the token is considered
 	// expired. It is present only when using an authentication method,
@@ -118,9 +125,29 @@ type Client struct {
 	tokenExpiresAt time.Time
 }
 
+// githubAuthConfig provides the settings for Github Authentication using a
+// Github App.
+type githubAuthConfig struct {
+	// endpoint specifies a Github API URL, which the Delivery Service will
+	// query for user's information, before signing a JWT token for us.
+	endpoint *url.URL
+
+	// clientID is the client id of the Github App.
+	clientID string
+
+	// privateKey is the private key used to sign JWT tokens for the Github
+	// App. The private key is always an RSA key, since that's what Github
+	// creates for us.
+	privateKey *rsa.PrivateKey
+}
+
 // New creates a new [Client] against the provided endpoint and configures it
 // using the specified options.
 func New(endpoint string, opts ...Option) (*Client, error) {
+	if endpoint == "" {
+		return nil, ErrNoDeliveryServiceEndpoint
+	}
+
 	u, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
@@ -186,18 +213,47 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) (*http.Respon
 	return c.httpClient.Do(req)
 }
 
+// newGithubAppToken signs a new JWT token for the Github App. The JWT token is
+// used to authenticate against the Delivery Service, from which in exchange we
+// will get an authentication cookie.
+//
+// Github requires using RS256 and an expiry of at most 10 minutes. Also, we
+// backdate the `iat' with 60 seconds to tolerate clock drift between us and
+// Github, as documented in the official documentation.
+func (c *Client) newGithubAppToken() (string, error) {
+	if c.githubAuth == nil {
+		return "", errors.New("no github app authentication settings configured")
+	}
+
+	now := time.Now()
+	claims := jwt.RegisteredClaims{
+		Issuer:    c.githubAuth.clientID,
+		IssuedAt:  jwt.NewNumericDate(now.Add(-60 * time.Second)),
+		ExpiresAt: jwt.NewNumericDate(now.Add(9 * time.Minute)),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	signed, err := token.SignedString(c.githubAuth.privateKey)
+	if err != nil {
+		return "", fmt.Errorf("cannot sign JWT token: %w", err)
+	}
+
+	return signed, nil
+}
+
 // Authenticate authenticates the API client against the remote Delivery Service
 // API.
 //
 // Upon successful authentication the Delivery Service returns a cookie with a
 // JWT bearer token, which will be used in subsequent API calls to the service.
 func (c *Client) Authenticate(ctx context.Context) error {
-	if c.authGithubURL == nil {
-		return ErrNoGithubAPIURL
+	if c.githubAuth == nil {
+		return nil
 	}
 
-	if c.authGithubToken == "" {
-		return ErrNoGithubToken
+	appJWT, err := c.newGithubAppToken()
+	if err != nil {
+		return err
 	}
 
 	u, err := url.JoinPath(c.endpoint.String(), "/auth")
@@ -210,8 +266,8 @@ func (c *Client) Authenticate(ctx context.Context) error {
 		return err
 	}
 	query := req.URL.Query()
-	query.Add("api_url", c.authGithubURL.String())
-	query.Add("access_token", c.authGithubToken)
+	query.Add("api_url", c.githubAuth.endpoint.String())
+	query.Add("access_token", appJWT)
 	req.URL.RawQuery = query.Encode()
 
 	// `Authenticate' method does not use `doRequest', because `doRequest' may
@@ -538,23 +594,46 @@ func (c *Client) SubmitRuntimeArtefact(ctx context.Context, labels map[string]st
 }
 
 // WithGithubAuthentication configures the [Client] to authenticate against the
-// remote Delivery Service using a Github access token.
+// remote Delivery Service using a JWT token signed by a Github App.
 //
 // In this authentication mode the Delivery Service queries the user associated
 // with the provided access token and then signs a JWT token using it's own
 // private key, which is then returned back to the client as a cookie.
 //
 // Subsequent API calls to the Delivery Service are expected to have the JWT
-// token already set as a cookie.
-func WithGithubAuthentication(apiURL, accessToken string) Option {
+// token returned by Delivery Service already set as a cookie.
+func WithGithubAuthentication(apiURL, clientID, privateKeyPath string) Option {
 	opt := func(c *Client) error {
+		if apiURL == "" {
+			return ErrNoGithubAPIURL
+		}
+		if clientID == "" {
+			return ErrNoGithubClientID
+		}
+		if privateKeyPath == "" {
+			return ErrNoGithubPrivateKey
+		}
+
 		u, err := url.Parse(apiURL)
 		if err != nil {
 			return err
 		}
 
-		c.authGithubURL = u
-		c.authGithubToken = accessToken
+		privKeyData, err := os.ReadFile(filepath.Clean(privateKeyPath))
+		if err != nil {
+			return fmt.Errorf("cannot read private key file: %w", err)
+		}
+
+		privKey, err := jwt.ParseRSAPrivateKeyFromPEM(privKeyData)
+		if err != nil {
+			return fmt.Errorf("cannot parse private key: %w", err)
+		}
+
+		c.githubAuth = &githubAuthConfig{
+			endpoint:   u,
+			clientID:   clientID,
+			privateKey: privKey,
+		}
 
 		return nil
 	}
