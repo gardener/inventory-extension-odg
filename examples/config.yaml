@@ -69,6 +69,10 @@ odg:
       # user's information with the provided access token.
       url: https://my-github-enterprise.com/api/v3
 
-      # Specifies the Github access token which will be used to query the
-      # information about the user associated with the token.
-      token: my-personal-access-token
+      # Specifies the client id of the Github App, which is used to sign the JWT
+      # token.
+      client_id: my-github-app-client-id
+
+      # Specifies the path to the private key that signs the JWT token of the
+      # Github App.
+      private_key_path: /path/to/github/app/private.key

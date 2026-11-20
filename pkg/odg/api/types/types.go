@@ -17,6 +17,17 @@ import (
 	"cloud.google.com/go/civil"
 )
 
+// AuthRequest is the request submitted to the Delivery Service during
+// authentication.
+type AuthRequest struct {
+	// AccessToken is the access token for authentication.
+	AccessToken string `json:"access_token"`
+
+	// APIURL is the API URL which Delivery Service will invoke with our
+	// access token.
+	APIURL string `json:"api_url"`
+}
+
 // SeverityLevel specifies the level of severity for a finding.
 type SeverityLevel string
 

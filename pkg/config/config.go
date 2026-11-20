@@ -82,9 +82,15 @@ type ODGAuthGithubConfig struct {
 	// use to query user's information with the provided access token.
 	URL string `yaml:"url"`
 
-	// Token specifies the Github access token which will be used to query
-	// the information about the user associated with the token.
-	Token string `yaml:"token"`
+	// ClientID specifies the Github App Client ID, which will be used when
+	// signing a JWT token with the App's private key and handed over to the
+	// Delivery Service.
+	ClientID string `yaml:"client_id"`
+
+	// PrivateKeyPath specifies a path to a PEM-encoded private key for the
+	// Github App, with which a JWT token will be signed and sent to the
+	// Delivery Service.
+	PrivateKeyPath string `yaml:"private_key_path"`
 }
 
 // Parse parses the configs from the given paths in-order. Configuration
