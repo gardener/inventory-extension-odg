@@ -261,10 +261,20 @@ func (c *Client) Authenticate(ctx context.Context) error {
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	authReq := apitypes.AuthRequest{
+		AccessToken: appJWT,
+		APIURL:      c.githubAuth.endpoint.String(),
+	}
+	authData, err := json.Marshal(authReq)
 	if err != nil {
 		return err
 	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewBuffer(authData))
+	if err != nil {
+		return err
+	}
+
 	query := req.URL.Query()
 	query.Add("api_url", c.githubAuth.endpoint.String())
 	query.Add("access_token", appJWT)
