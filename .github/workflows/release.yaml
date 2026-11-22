@@ -10,6 +10,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      pull-requests: write
 
   publish-oci:
     uses: ./.github/workflows/oci-images.yaml
